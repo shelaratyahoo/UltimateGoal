@@ -55,6 +55,7 @@ public class RedTreeconeAuto extends LinearOpMode {
 
         //Create RingDetection object.
         RingDetection ringDetection = new RingDetection(hardwareMap, telemetry, runtime);
+        Robot Autobot = new Robot(hardwareMap, telemetry, runtime);
         ringDetection.activateTF();
         telemetry.addLine( "Tensor Flow activated...");
         telemetry.update();
@@ -64,16 +65,7 @@ public class RedTreeconeAuto extends LinearOpMode {
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-
-            //Detect the number of rings
-            numberOfRings = ringDetection.detectRing();
-            if(0 == numberOfRings){
-                telemetry.addData("Status", "Number of Rings=" + numberOfRings);
-                telemetry.update();
-            }
-
-
+        if (opModeIsActive()) {
             //Move Kiwi to the desired block
             //Drop the wobble
             //Move Kiwi to the next wobble
@@ -81,6 +73,21 @@ public class RedTreeconeAuto extends LinearOpMode {
             //Move Kiwi to the desired block
             //Drop the wobble
             //Move Kiwi to the launch zone
+            //Detect the number of rings
+
+            numberOfRings = ringDetection.detectRing();
+            ringDetection.shutdownTF();
+            telemetry.addData("Status", "Number of Rings=" + numberOfRings);
+            telemetry.update();
+            if (numberOfRings == 0){
+                Autobot.AutonA();
+            }
+            else if (numberOfRings == 1){
+                Autobot.AutonA();
+            }
+            else{
+                Autobot.AutonC();
+            }
         }
         ringDetection.shutdownTF();
     }
