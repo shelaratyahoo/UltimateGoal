@@ -7,6 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+//import static java.lang.Thread.sleep;
+
+import static android.os.SystemClock.sleep;
+
 public class Robot {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor topDrive = null;
@@ -18,6 +22,7 @@ public class Robot {
     double topPower = 0;
     double armpower = 0;
     double servopower = 0;
+    static double powerFactor = 0.5;
     private Servo clamp = null;
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
@@ -27,15 +32,32 @@ public class Robot {
         telemetry = mainTelemetry;
         runtime = elapsedTime;
 
+        //Initialize hardware map
+        topDrive  = hardwareMap.get(DcMotor.class, "topDrive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
+        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        topDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+//        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+//        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+
     }
 
     public void wait(int interval){
-        try {
-            runtime.reset();
-            runtime.wait(interval);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            runtime.reset();
+//            runtime.wait(interval);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        sleep(interval);
     }
 
     public void moveArmDown(int interval) {
@@ -53,25 +75,33 @@ public class Robot {
         servopower = -0.25;
     }
 
+    private void startRobot(){
+        topDrive.setPower(topPower * powerFactor);
+        leftDrive.setPower(leftPower  * powerFactor);
+        rightDrive.setPower(rightPower * powerFactor);
+    }
     public void stopRobot(){
         topPower = 0;
         leftPower = 0;
         rightPower = 0;
+        topDrive.setPower(topPower);
+        leftDrive.setPower(leftPower);
+        rightDrive.setPower(rightPower);
     }
 
     public void moveForward(int interval){
         topPower = 0;
-
         leftPower = -1;
         rightPower = 1;
+        startRobot();
         wait(interval);
         stopRobot();
     }
     public void moveBackward(int interval){
         topPower = 0;
-
         leftPower = 1;
         rightPower = -1;
+        startRobot();
         wait(interval);
         stopRobot();
     }
@@ -79,17 +109,16 @@ public class Robot {
         topPower = 1;
         leftPower = 1;
         rightPower = 1;
+        startRobot();
         wait(interval);
         stopRobot();
     }
-
-
 
     public void strafeLeft(int interval){
         topPower = 1;
         leftPower = 0;
         rightPower = 0;
-        runtime.reset();
+        startRobot();
         wait(interval);
         stopRobot();
     }
@@ -98,7 +127,7 @@ public class Robot {
         topPower = -1;
         leftPower = 0;
         rightPower = 0;
-        runtime.reset();
+        startRobot();
         wait(interval);
         stopRobot();
     }
@@ -106,14 +135,14 @@ public class Robot {
 
     public void AutonA() {
         moveForward(3000);
-
-        moveArmDown(500);
-        moveClampout();
-        moveArmUp(500);
+        //moveArmDown(500);
+        //moveClampout();
+        //moveArmUp(500);
+        rotate(2000);
     }
 
     public void AutonB() {
-        moveForward(3500);
+        moveForward(200);
         strafeLeft(500);
         strafeRight(500);
 
