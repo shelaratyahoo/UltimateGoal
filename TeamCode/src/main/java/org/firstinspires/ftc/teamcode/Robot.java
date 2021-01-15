@@ -22,7 +22,7 @@ public class Robot {
     double topPower = 0;
     double armpower = 0;
     double servopower = 0;
-    static double powerFactor = 0.5;
+    static double powerFactor = 0.3;
     private Servo clamp = null;
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
@@ -134,11 +134,21 @@ public class Robot {
 
 
     public void AutonA() {
-        moveForward(3000);
+        moveForward(1000);
         //moveArmDown(500);
         //moveClampout();
         //moveArmUp(500);
         rotate(2000);
+        //moveBackward(3000);
+        //rotate
+        //moveArmDown(500);
+        //moveClampin();
+        //moveArmUp(500);
+        //rotate(2000);
+        //moveForward(3000);
+        //moveArmDown(500);
+        //moveClampin();
+        //moveArmUp(500);
     }
 
     public void AutonB() {
@@ -149,13 +159,14 @@ public class Robot {
         moveArmDown(500);
         moveClampout();
         moveArmUp(500);
+
     }
     public void AutonC() {
-        moveForward(4000);
+        moveForward(3400);
 
-        moveArmDown(500);
-        moveClampout();
-        moveArmUp(500);
+        //moveArmDown(500);
+        //moveClampout();
+        //moveArmUp(500);
     }
 
 

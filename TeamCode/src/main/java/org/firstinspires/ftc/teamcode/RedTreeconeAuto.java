@@ -75,13 +75,14 @@ public class RedTreeconeAuto extends LinearOpMode {
             //Move Kiwi to the launch zone
             //Detect the number of rings
 
-            Autobot.strafeRight(600);
-            Autobot.moveForward(800);
+
+            Autobot.moveForward(1150);
+            Autobot.strafeRight(580);
             numberOfRings = ringDetection.detectRing();
             ringDetection.shutdownTF();
             telemetry.addData("Status", "Number of Rings=" + numberOfRings);
             telemetry.update();
-            Autobot.strafeLeft(600);
+            Autobot.strafeLeft(630);
 
             if (numberOfRings == 0){
                 Autobot.AutonA();
@@ -90,7 +91,7 @@ public class RedTreeconeAuto extends LinearOpMode {
                 Autobot.AutonA();
             }
             else{
-                Autobot.AutonA();
+                Autobot.AutonC();
             }
         }
         ringDetection.shutdownTF();
