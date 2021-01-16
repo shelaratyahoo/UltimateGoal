@@ -60,9 +60,12 @@ public class RedTreeconeAuto extends LinearOpMode {
         telemetry.addLine( "Tensor Flow activated...");
         telemetry.update();
 
+        //Hold the arm
+        Autobot.holdArm();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        runtime.reset();
+        //runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         if (opModeIsActive()) {
@@ -75,7 +78,7 @@ public class RedTreeconeAuto extends LinearOpMode {
             //Move Kiwi to the launch zone
             //Detect the number of rings
 
-
+            //Autobot.moveArmDown(500);
             Autobot.moveForward(1150);
             Autobot.strafeRight(580);
             numberOfRings = ringDetection.detectRing();

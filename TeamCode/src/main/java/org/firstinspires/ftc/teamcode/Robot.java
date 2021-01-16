@@ -36,14 +36,18 @@ public class Robot {
         topDrive  = hardwareMap.get(DcMotor.class, "topDrive");
         leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
         rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+        arm = hardwareMap.get(DcMotor.class, "arm");
 
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         topDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        topDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //        leftDrive.setDirection(DcMotor.Direction.FORWARD);
 //        rightDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -61,18 +65,52 @@ public class Robot {
     }
 
     public void moveArmDown(int interval) {
-        armpower = 1;
+        armpower = -0.1;
+        startArm();
         wait(interval);
+        stopArm();
+        wait(5);
+        stopArm();
+        wait(5);
+        stopArm();
+        wait(5);
+        stopArm();
+        wait(5);
+        stopArm();
+        wait(1);
+        stopArm();
+        wait(1);
+        stopArm();
+        wait(1);
+        stopArm();
     }
+
     public void moveArmUp(int interval) {
-        armpower = -1;
+        armpower = 0.1;
+        startArm();
         wait(interval);
+        stopArm();
     }
+
     public void moveClampin() {
         servopower = 0.25;
     }
+
     public void moveClampout() {
         servopower = -0.25;
+    }
+
+    private void startArm(){
+        arm.setPower(armpower * powerFactor);
+    }
+
+    public void holdArm(){
+        arm.setPower(0.3);
+    }
+
+    private void stopArm(){
+        armpower = 0;
+        arm.setPower(armpower);
     }
 
     private void startRobot(){
@@ -80,6 +118,7 @@ public class Robot {
         leftDrive.setPower(leftPower  * powerFactor);
         rightDrive.setPower(rightPower * powerFactor);
     }
+
     public void stopRobot(){
         topPower = 0;
         leftPower = 0;
@@ -134,11 +173,11 @@ public class Robot {
 
 
     public void AutonA() {
-        moveForward(1000);
-        //moveArmDown(500);
+        moveForward(2000);
+        moveArmDown(200);
         //moveClampout();
         //moveArmUp(500);
-        rotate(2000);
+        //rotate(2000);
         //moveBackward(3000);
         //rotate
         //moveArmDown(500);
