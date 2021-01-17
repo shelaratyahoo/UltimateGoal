@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
+import static android.os.SystemClock.sleep;
 
 public class RingDetection {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -67,6 +68,7 @@ public class RingDetection {
     }
 
     public int detectRing() {
+        int count = 0;
         int numberOfRings = 0;
         if (tfod != null) {
             // getUpdatedRecognitions() will return null if no new information is available since
@@ -92,6 +94,14 @@ public class RingDetection {
                         }
                     }
                     telemetry.update();
+                }
+                else {
+                    count++;
+                    sleep(200);
+                    if(count > 9){
+                        numberOfRings = 0;
+                        continueRingDetection = false;
+                    }
                 }
             }
         }

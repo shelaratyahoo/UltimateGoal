@@ -17,13 +17,25 @@ public class Robot {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     private DcMotor arm = null;
+    private Servo cclamp = null;
+    private Clamp clamp = null;
+
     double leftPower = 0;
     double rightPower = 0;
     double topPower = 0;
-    double armpower = 0;
-    double servopower = 0;
-    static double powerFactor = 0.3;
-    private Servo clamp = null;
+    double armPower = 0;
+
+    static final double SERVO_STOP = 0.5;
+    static final double SERVO_ROTATE_CLOCKWISE = 1;
+    static final double SERVO_ROTATE_ANTI_CLOCKWISE = 0;
+    static final double powerFactor = 0.3;
+
+    static final double MOVE_SERVO = 1;
+    static final double STOP_SERVO = 0.5;
+    static final double OPEN_CLAMP = 1;     // Clamp open position
+    static final double CLOSE_CLAMP = 0;    // Clamp close position
+    static final int    SLEEP_FOR_SERVO_MOTORS = 200;
+
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
 
@@ -31,12 +43,14 @@ public class Robot {
         hardwareMap = mainHardwareMap;
         telemetry = mainTelemetry;
         runtime = elapsedTime;
+        clamp = new Clamp(mainHardwareMap);
 
         //Initialize hardware map
         topDrive  = hardwareMap.get(DcMotor.class, "topDrive");
         leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
         rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
         arm = hardwareMap.get(DcMotor.class, "arm");
+        clamp.Initialize();
 
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -49,33 +63,24 @@ public class Robot {
         topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-//        rightDrive.setDirection(DcMotor.Direction.REVERSE);
-
     }
 
     public void wait(int interval){
-//        try {
-//            runtime.reset();
-//            runtime.wait(interval);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         sleep(interval);
     }
 
     public void moveArmDown(int interval) {
-        armpower = -0.1;
+        armPower = -0.1;
         startArm();
         wait(interval);
         stopArm();
-        wait(5);
+        wait(1);
         stopArm();
-        wait(5);
+        wait(1);
         stopArm();
-        wait(5);
+        wait(1);
         stopArm();
-        wait(5);
+        wait(1);
         stopArm();
         wait(1);
         stopArm();
@@ -86,31 +91,28 @@ public class Robot {
     }
 
     public void moveArmUp(int interval) {
-        armpower = 0.1;
+        armPower = 0.1;
         startArm();
         wait(interval);
         stopArm();
     }
 
-    public void moveClampin() {
-        servopower = 0.25;
-    }
-
-    public void moveClampout() {
-        servopower = -0.25;
-    }
-
-    private void startArm(){
-        arm.setPower(armpower * powerFactor);
-    }
-
-    public void holdArm(){
-        arm.setPower(0.3);
+    public void holdArmUp(){
+        arm.setPower(0.2);
     }
 
     private void stopArm(){
-        armpower = 0;
-        arm.setPower(armpower);
+        armPower = 0;
+        arm.setPower(armPower);
+    }
+
+    public void CloseOrOpen(boolean userInput)
+    {
+        clamp.CloseOrOpen(userInput);
+    }
+
+    private void startArm(){
+        arm.setPower(armPower * powerFactor);
     }
 
     private void startRobot(){
@@ -136,6 +138,7 @@ public class Robot {
         wait(interval);
         stopRobot();
     }
+
     public void moveBackward(int interval){
         topPower = 0;
         leftPower = 1;
@@ -144,6 +147,7 @@ public class Robot {
         wait(interval);
         stopRobot();
     }
+
     public void rotate(int interval){
         topPower = 1;
         leftPower = 1;
@@ -171,42 +175,47 @@ public class Robot {
         stopRobot();
     }
 
+    public void AutoRing0() {
+        moveForward(2200);
 
-    public void AutonA() {
-        moveForward(2000);
-        moveArmDown(200);
-        //moveClampout();
-        //moveArmUp(500);
-        //rotate(2000);
-        //moveBackward(3000);
-        //rotate
-        //moveArmDown(500);
-        //moveClampin();
-        //moveArmUp(500);
-        //rotate(2000);
-        //moveForward(3000);
-        //moveArmDown(500);
-        //moveClampin();
-        //moveArmUp(500);
-    }
-
-    public void AutonB() {
-        moveForward(200);
-        strafeLeft(500);
+        //Drop the wobble
+        moveArmDown(50);
+        wait(2000);
+        clamp.CloseOrOpen(true);
+        moveBackward(500);
+        holdArmUp();
+        wait(2000);
         strafeRight(500);
-
-        moveArmDown(500);
-        moveClampout();
-        moveArmUp(500);
-
-    }
-    public void AutonC() {
-        moveForward(3400);
-
-        //moveArmDown(500);
-        //moveClampout();
-        //moveArmUp(500);
+        moveForward(1000);
     }
 
+    public void AutoRing1() {
+        //Move Kiwi to the desired block
+        moveForward(3000);
+        strafeRight(1150);
 
+        //Drop the wobble
+        moveArmDown(50);
+        wait(2000);
+        clamp.CloseOrOpen(true);
+        holdArmUp();
+        wait(2000);
+
+        //Move Kiwi to the launch zone
+        strafeLeft(1000);
+    }
+
+    public void AutoRing4() {
+         //Move Kiwi to the desired block
+         moveForward(4000);
+
+         //Drop the wobble
+        moveArmDown(50);
+        wait(2000);
+        clamp.CloseOrOpen(true);
+        holdArmUp();
+
+        //Move Kiwi to the launch zone
+        moveBackward(1500);
+    }
 }

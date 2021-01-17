@@ -30,13 +30,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 @Autonomous(name="RedTreecone", group = "Autonomous")
 public class RedTreeconeAuto extends LinearOpMode {
@@ -61,40 +56,33 @@ public class RedTreeconeAuto extends LinearOpMode {
         telemetry.update();
 
         //Hold the arm
-        Autobot.holdArm();
+        Autobot.CloseOrOpen(true);
+        Autobot.holdArmUp();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        //runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         if (opModeIsActive()) {
-            //Move Kiwi to the desired block
-            //Drop the wobble
-            //Move Kiwi to the next wobble
-            //Pickup the next wobble
-            //Move Kiwi to the desired block
-            //Drop the wobble
-            //Move Kiwi to the launch zone
-            //Detect the number of rings
 
-            //Autobot.moveArmDown(500);
+
+            //Detect number of rings.
             Autobot.moveForward(1150);
             Autobot.strafeRight(580);
             numberOfRings = ringDetection.detectRing();
             ringDetection.shutdownTF();
             telemetry.addData("Status", "Number of Rings=" + numberOfRings);
             telemetry.update();
-            Autobot.strafeLeft(630);
+            Autobot.strafeLeft(620);
 
             if (numberOfRings == 0){
-                Autobot.AutonA();
+                Autobot.AutoRing0();
             }
             else if (numberOfRings == 1){
-                Autobot.AutonA();
+                Autobot.AutoRing1();
             }
             else{
-                Autobot.AutonC();
+                Autobot.AutoRing4();
             }
         }
         ringDetection.shutdownTF();
