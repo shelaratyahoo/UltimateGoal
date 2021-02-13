@@ -31,9 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 
 /**
@@ -49,116 +47,97 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Kiwi Chassi", group="Linear Opmode")
-public class TestingKiwiChassi extends LinearOpMode {
+@TeleOp(name="Kiwi", group="Linear Opmode")
+public class Kiwi extends LinearOpMode {
 
+    static final int SLEEP_KIWI = 100;
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor topDrive = null;
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private boolean armUpOrDown = false;
+    private boolean clampOpenOrClose = false;
 
     // Setup a variable for each drive wheel to save power level for telemetry
-    double leftPower = 0;
-    double rightPower = 0;
-    double topPower = 0;
+    static final double powerFactor = 0.3;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        topDrive  = hardwareMap.get(DcMotor.class, "topDrive");
-        leftDrive  = hardwareMap.get(DcMotor.class, "leftDrive");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+        //Create RingDetection object.
+        RingDetection ringDetection = new RingDetection(hardwareMap, telemetry, runtime);
+        Robot robot = new Robot(hardwareMap, telemetry, runtime, powerFactor);
 
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        topDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-//        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-//        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        //Initialize the robot object
+        robot.Init();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+        //Gamepad data
+        float gamepad1_left_stick_y = 0;
+        float gamepad1_left_stick_x = 0;
+        float gamepad1_right_stick_y = 0;
+        boolean gamepad1_left_bumper = false;
+        boolean gamepad1_right_bumper = false;
+
+        boolean gamepad1_a = false;
+        boolean gamepad1_b = false;
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            if(this.gamepad1.left_stick_y != 0)
+            //Get input from the gamepad.
+            gamepad1_left_stick_y = gamepad1.left_stick_y;
+            gamepad1_left_stick_x = gamepad1.left_stick_x;
+            gamepad1_right_stick_y = gamepad1.right_stick_y;
+            gamepad1_a = gamepad1.a;
+            gamepad1_b = gamepad1.b;
+
+            gamepad1_left_bumper = gamepad1.left_bumper;
+            gamepad1_right_bumper = gamepad1.right_bumper;
+
+            if(gamepad1_left_stick_y != 0)
             {
-                MoveY(this.gamepad1.left_stick_y);
+                robot.ForwardOrBackward(gamepad1_left_stick_y);
             }
-            else if(this.gamepad1.left_stick_x != 0)
+            else if(gamepad1_left_stick_x != 0)
             {
-                Strafe(this.gamepad1.left_stick_x);
+                robot.Strafe(gamepad1_left_stick_x);
             }
-            else if (this.gamepad1.right_stick_y != 0){
-                Rotate(this.gamepad1.right_stick_y);
+            else if (gamepad1_right_stick_y != 0){
+                robot.Rotate(gamepad1_right_stick_y);
             }
-            if(this.gamepad1.y)
+            else if(gamepad1_left_bumper == true) {
+                robot.holdArmUp();
+            }
+            else if(gamepad1_right_bumper == true) {
+                robot.holdArmDown();
+            }
+            else if(gamepad1_a){
+               robot.CloseOrOpen(clampOpenOrClose);
+               clampOpenOrClose = !clampOpenOrClose;
+            }
+            else if(gamepad1_b){
+                if(armUpOrDown){
+                    robot.holdArmUp();
+                } else {
+                    robot.downArm();
+                }
+                armUpOrDown =!armUpOrDown;
+                robot.wait(1000);
+            }
+            else
             {
-                StopRobot();
+                robot.StopRobot();
+                robot.stopArm();
             }
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f), top (%.2f)", leftPower, rightPower, topPower);
+            // Show the elapsed game time.
+            telemetry.addLine("Run Time: " + runtime.toString());
             telemetry.update();
+            sleep(SLEEP_KIWI);
         }
     }
 
-    private void MoveY(double power){
-        topPower = 0;
-        leftPower = power;
-        rightPower = -(power);
-        SetPower();
-    }
-
-    private void Strafe(double power){
-        topPower = power;
-        leftPower = 0;
-        rightPower = -(power);
-        SetPower();
-    }
-
-    private void MoveX(double power){
-        topPower = power;
-        leftPower = power;
-        rightPower = power;
-
-        leftPower /=2;
-        rightPower /=2;
-        SetPower();
-    }
-
-    private void Rotate(double power){
-        topPower = power;
-        leftPower = power;
-        rightPower = power;
-        SetPower();
-
-    }
-
-    private void StopRobot(){
-        topPower = 0;
-        leftPower = 0;
-        rightPower = 0;
-        SetPower();
-    }
-
-    private void SetPower(){
-        topDrive.setPower(topPower);
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
-    }
 }
