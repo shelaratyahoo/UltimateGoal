@@ -32,8 +32,8 @@ package org.firstinspires.ftc.teamcode.Samples;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 
 /**
@@ -55,6 +55,10 @@ public class ShooterTesting extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor shooter = null;
+    private Servo feeder  = null;
+    static final double FEEDER_UP = 0;     // Clamp open position
+    static final double FEEDER_DOWN = .5;    // Clamp close position
+    private double shooterPower = 0;
 
     @Override
     public void runOpMode() {
@@ -65,42 +69,55 @@ public class ShooterTesting extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         shooter  = hardwareMap.get(DcMotor.class, "shooter");
+        feeder = hardwareMap.get(Servo.class, "feeder");
 
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
         shooter.setDirection(DcMotor.Direction.FORWARD);
+        feeder.setPosition(FEEDER_DOWN);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+        boolean prevRightBumper = false;
+        boolean currentRightBumper = false;
+
+        //Set the motor to default speed
+        shooterPower = 0.35;
+        shooter.setPower(shooterPower);
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // Setup a variable for each drive wheel to save power level for telemetry
-            double leftPower;
+            currentRightBumper = gamepad1.right_bumper;
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double turn  =  gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
-
-            // Send calculated power to wheels
-            shooter.setPower(leftPower);
+            //Check if it rising edge of the button pressed.
+            if(!prevRightBumper && currentRightBumper )
+            {
+                //fire the ring
+                fireRing(0.45);
+                fireRing(0.49);
+                fireRing(0.35);
+            }
+            prevRightBumper = currentRightBumper;
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Shooter", "left (%.2f)", leftPower);
+            telemetry.addData("Shooter power=", "left (%.2f)", shooterPower);
             telemetry.update();
+
+            sleep(200);
         }
+
+    }
+
+    private void fireRing(double newPower)
+    {
+        feeder.setPosition(FEEDER_UP);
+        sleep(150);
+        shooter.setPower(newPower);
+        telemetry.addData("Shooter", "left (%.2f)", newPower);
+        telemetry.update();
+        feeder.setPosition(FEEDER_DOWN);
+        sleep(620);
     }
 }

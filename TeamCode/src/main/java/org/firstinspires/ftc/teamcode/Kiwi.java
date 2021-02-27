@@ -79,6 +79,7 @@ public class Kiwi extends LinearOpMode {
         float gamepad1_left_stick_y = 0;
         float gamepad1_left_stick_x = 0;
         float gamepad1_right_stick_y = 0;
+        float gamepad1_right_stick_x = 0;
         boolean gamepad1_left_bumper = false;
         boolean gamepad1_right_bumper = false;
 
@@ -103,10 +104,13 @@ public class Kiwi extends LinearOpMode {
             }
             else if(gamepad1_left_stick_x != 0)
             {
-                robot.Strafe(gamepad1_left_stick_x);
+                robot.StrafeLeftOrRight(gamepad1_left_stick_x);
             }
             else if (gamepad1_right_stick_y != 0){
-                robot.Rotate(gamepad1_right_stick_y);
+                robot.MoveLeftAxis(gamepad1_right_stick_y);
+            }
+            else if(gamepad1_right_stick_x != 0){
+                robot.MoveRightAxis(gamepad1_right_stick_x);
             }
             else if(gamepad1_left_bumper == true) {
                 robot.holdArmUp();

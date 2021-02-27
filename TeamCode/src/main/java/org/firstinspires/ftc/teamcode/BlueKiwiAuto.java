@@ -73,14 +73,14 @@ public class BlueKiwiAuto extends LinearOpMode {
         // run until the end of the loop or the driver presses STOP
         if (opModeIsActive()) {
             Autobot.autonomousMoveForward(1150);
-            Autobot.autonomousStrafeRight(580);
+            Autobot.autonomousRightAxis(580);
 
             //Detect number of rings.
             numberOfRings = ringDetection.detectRing();
             ringDetection.shutdownTF();
             log("Number of Rings=" + numberOfRings);
 
-            Autobot.autonomousStrafeLeft(610);
+            Autobot.autonomousLeftAxis(610);
 
             if (numberOfRings == 0){
                 Autobot.AutoRing0();
