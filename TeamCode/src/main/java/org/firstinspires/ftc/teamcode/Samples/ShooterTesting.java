@@ -79,31 +79,54 @@ public class ShooterTesting extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        boolean prevRightBumper = false;
-        boolean currentRightBumper = false;
+        boolean prevxbutton = false;
+        boolean currentxbutton = false;
+        boolean prevybutton = false;
+        boolean currentybutton = false;
+        boolean currentShooterState = false;
 
-        //Set the motor to default speed
-        shooterPower = -0.35;
-        shooter.setPower(shooterPower);
+
+
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            currentRightBumper = gamepad1.right_bumper;
+            //Set the motor to default speed
+            currentybutton = gamepad1.y;
+            currentxbutton = gamepad1.x;
+
+            if(!prevybutton && currentybutton )
+            {
+                if(currentShooterState == false){
+                    shooterPower = -0.4;
+                    shooter.setPower(shooterPower);
+                    currentShooterState = true;
+                }
+               else{
+                    shooterPower = 0;
+                    shooter.setPower(shooterPower);
+                    currentShooterState = false;
+                }
+            }
+
+            prevybutton = currentybutton;
 
             //Check if it rising edge of the button pressed.
-            if(!prevRightBumper && currentRightBumper )
+            if(!prevxbutton && currentxbutton && currentShooterState )
             {
                 //fire the ring
-                fireRing(0.45);
-                fireRing(0.49);
-                fireRing(0.35);
+                fireRing(-0.5);
+                fireRing(-0.54);
+                fireRing(-0.4);
             }
-            prevRightBumper = currentRightBumper;
+
+            prevxbutton = currentxbutton;
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Shooter power=", "left (%.2f)", shooterPower);
+            telemetry.addData("Previous Button=", "%s", String.valueOf(prevxbutton));
             telemetry.update();
 
             sleep(200);
