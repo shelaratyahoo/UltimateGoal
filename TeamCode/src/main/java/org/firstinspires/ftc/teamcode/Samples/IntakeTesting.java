@@ -37,29 +37,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-/**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opm ode to the Driver Station OpMode list
- */
-
-@TeleOp(name="ShooterTesting", group="Linear Opmode")
-public class ShooterTesting extends LinearOpMode {
+@TeleOp(name="IntakeTesting", group="Linear Opmode")
+public class IntakeTesting extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor shooter = null;
-    private Servo feeder  = null;
-    static final double FEEDER_UP = 0;     // Clamp open position
-    static final double FEEDER_DOWN = .5;    // Clamp close position
-    private double shooterPower = 0;
+    private DcMotor innerIntake = null;
+    private DcMotor outerIntake = null;
+    private double intakePower = 0;
 
     @Override
     public void runOpMode() {
@@ -69,11 +54,11 @@ public class ShooterTesting extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        shooter  = hardwareMap.get(DcMotor.class, "shooter");
-        feeder = hardwareMap.get(Servo.class, "feeder");
+        innerIntake = hardwareMap.get(DcMotor.class, "innerIntake");
+        outerIntake = hardwareMap.get(DcMotor.class, "outerIntake");
 
-        shooter.setDirection(DcMotor.Direction.REVERSE);
-        feeder.setPosition(FEEDER_DOWN);
+        innerIntake.setDirection(DcMotor.Direction.FORWARD);
+        outerIntake.setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -82,43 +67,21 @@ public class ShooterTesting extends LinearOpMode {
         boolean prevRightBumper = false;
         boolean currentRightBumper = false;
 
-        //Set the motor to default speed
-        shooterPower = -0.35;
-        shooter.setPower(shooterPower);
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            currentRightBumper = gamepad1.right_bumper;
+            intakePower = gamepad1.left_stick_y;
 
-            //Check if it rising edge of the button pressed.
-            if(!prevRightBumper && currentRightBumper )
-            {
-                //fire the ring
-                fireRing(0.45);
-                fireRing(0.49);
-                fireRing(0.35);
-            }
-            prevRightBumper = currentRightBumper;
+            innerIntake.setPower(intakePower);
+            outerIntake.setPower(intakePower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Shooter power=", "left (%.2f)", shooterPower);
+            telemetry.addData("interPower=", "left (%.2f)", intakePower);
             telemetry.update();
 
             sleep(200);
         }
 
-    }
-
-    private void fireRing(double newPower)
-    {
-        feeder.setPosition(FEEDER_UP);
-        sleep(150);
-        shooter.setPower(newPower);
-        telemetry.addData("Shooter", "left (%.2f)", newPower);
-        telemetry.update();
-        feeder.setPosition(FEEDER_DOWN);
-        sleep(620);
     }
 }
