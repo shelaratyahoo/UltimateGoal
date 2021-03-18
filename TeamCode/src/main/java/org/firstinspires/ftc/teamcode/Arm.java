@@ -30,6 +30,7 @@ public class Arm {
         arm = hardwareMap.get(DcMotor.class, "arm");
 //        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setDirection(DcMotor.Direction.FORWARD);
     }
 
     public void wait(int interval){
@@ -51,6 +52,17 @@ public class Arm {
         wait(500);
         stopArm();
         wait(1);
+    }
+
+    public void Down()
+    {
+        arm.setPower(1);
+        wait(500);
+    }
+    public void Up()
+    {
+        arm.setPower(-1);
+        wait(500);
     }
 
     public void autonomousMoveArmDown(int interval) {
@@ -79,5 +91,7 @@ public class Arm {
     }
 
     public void stopArm(){ arm.setPower(0); }
+    public void stop(){ arm.setPower(0); }
 
 }
+
