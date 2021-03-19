@@ -47,10 +47,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Kiwi", group="Linear Opmode")
-public class Kiwi extends LinearOpMode {
+@TeleOp(name="TriForce", group="Linear Opmode")
+public class TriForce extends LinearOpMode {
 
-    static final int SLEEP_KIWI = 100;
+    static final int SLEEP_TRIFORCE = 100;
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private boolean armUpOrDown = false;
@@ -85,6 +85,8 @@ public class Kiwi extends LinearOpMode {
 
         boolean gamepad1_a = false;
         boolean gamepad1_b = false;
+        boolean gamepad1_x = false;
+        boolean gamepad1_y = false;
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -92,8 +94,12 @@ public class Kiwi extends LinearOpMode {
             gamepad1_left_stick_y = gamepad1.left_stick_y;
             gamepad1_left_stick_x = gamepad1.left_stick_x;
             gamepad1_right_stick_y = gamepad1.right_stick_y;
+            gamepad1_right_stick_x = gamepad1.right_stick_x;
+
             gamepad1_a = gamepad1.a;
             gamepad1_b = gamepad1.b;
+            gamepad1_x = gamepad1.x;
+            gamepad1_y = gamepad1.y;
 
             gamepad1_left_bumper = gamepad1.left_bumper;
             gamepad1_right_bumper = gamepad1.right_bumper;
@@ -110,26 +116,28 @@ public class Kiwi extends LinearOpMode {
                 robot.MoveLeftAxis(gamepad1_right_stick_y);
             }
             else if(gamepad1_right_stick_x != 0){
-                robot.MoveRightAxis(gamepad1_right_stick_x);
+                robot.Rotate(gamepad1_right_stick_x);
             }
             else if(gamepad1_left_bumper == true) {
-                robot.holdArmUp();
+                //robot.holdArmUp();
             }
             else if(gamepad1_right_bumper == true) {
-                robot.holdArmDown();
+                //robot.holdArmDown();
             }
             else if(gamepad1_a){
-               robot.CloseOrOpen(clampOpenOrClose);
-               clampOpenOrClose = !clampOpenOrClose;
+                //Intake on/off
+//               robot.CloseOrOpen(clampOpenOrClose);
+//               clampOpenOrClose = !clampOpenOrClose;
             }
             else if(gamepad1_b){
-                if(armUpOrDown){
-                    robot.holdArmUp();
-                } else {
-                    robot.downArm();
-                }
-                armUpOrDown =!armUpOrDown;
-                robot.wait(1000);
+
+//                if(armUpOrDown){
+//                    robot.holdArmUp();
+//                } else {
+//                    robot.downArm();
+//                }
+//                armUpOrDown =!armUpOrDown;
+//                robot.wait(1000);
             }
             else
             {
@@ -140,7 +148,7 @@ public class Kiwi extends LinearOpMode {
             // Show the elapsed game time.
             telemetry.addLine("Run Time: " + runtime.toString());
             telemetry.update();
-            sleep(SLEEP_KIWI);
+            sleep(SLEEP_TRIFORCE);
         }
     }
 
