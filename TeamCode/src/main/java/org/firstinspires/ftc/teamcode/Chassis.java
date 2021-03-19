@@ -72,7 +72,7 @@ public class Chassis {
     {
         imuTurn = imuSensor.getImuTurn();
         topPower = power;
-        leftPower = power/2;
+        leftPower = -power/2;
         rightPower = power/2;
         setPower();
     }
