@@ -12,7 +12,11 @@ public class Arm {
     private DcMotor arm = null;
     private ElapsedTime runtime = new ElapsedTime();
 
+    private final boolean ARM_UP = true;
+    private final boolean ARM_DOWN = false;
+
     private double armPower = 0;
+    private boolean position = ARM_UP;
 
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
@@ -28,7 +32,6 @@ public class Arm {
 
     public void Initialize(){
         arm = hardwareMap.get(DcMotor.class, "arm");
-//        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         arm.setDirection(DcMotor.Direction.FORWARD);
     }
@@ -38,31 +41,42 @@ public class Arm {
     }
 
     public void holdArmUp(){
-        arm.setPower(.8);
-        wait(50);
+//        arm.setPower(.8);
+//        wait(50);
     }
 
     public void holdArmDown(){
-        arm.setPower(-0.2);
+//        arm.setPower(-0.2);
     }
 
     public void downArm()
     {
-        arm.setPower(-0.2);
-        wait(500);
-        stopArm();
-        wait(1);
+//        arm.setPower(-0.2);
+//        wait(500);
+//        stopArm();
+//        wait(1);
     }
 
     public void Down()
     {
-        arm.setPower(1);
-        wait(500);
+        Down(500);
     }
+
+    public void Down(int interval)
+    {
+        arm.setPower(1);
+        wait(interval);
+    }
+
     public void Up()
     {
+        Up(500);
+    }
+
+    public void Up(int interval)
+    {
         arm.setPower(-1);
-        wait(500);
+        wait(interval);
     }
 
     public void autonomousMoveArmDown(int interval) {

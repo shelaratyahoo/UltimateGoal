@@ -99,7 +99,7 @@ public class ShooterTesting extends LinearOpMode {
             if(!prevybutton && currentybutton )
             {
                 if(currentShooterState == false){
-                    shooterPower = -0.4;
+                    shooterPower = -0.38;
                     shooter.setPower(shooterPower);
                     currentShooterState = true;
                 }
@@ -116,9 +116,13 @@ public class ShooterTesting extends LinearOpMode {
             if(!prevxbutton && currentxbutton && currentShooterState )
             {
                 //fire the ring
-                fireRing(-0.5);
-                fireRing(-0.54);
+                fireRing(-0.42);
+                fireRing(-0.49);
                 fireRing(-0.4);
+
+//                fireRing(-0.5);
+//                fireRing(-0.54);
+//                fireRing(-0.4);
             }
 
             prevxbutton = currentxbutton;

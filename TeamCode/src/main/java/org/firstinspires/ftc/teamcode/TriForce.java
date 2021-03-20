@@ -57,7 +57,7 @@ public class TriForce extends LinearOpMode {
     private boolean clampOpenOrClose = false;
 
     // Setup a variable for each drive wheel to save power level for telemetry
-    static final double powerFactor = 0.3;
+    static final double powerFactor = 0.1;
 
     @Override
     public void runOpMode() {
