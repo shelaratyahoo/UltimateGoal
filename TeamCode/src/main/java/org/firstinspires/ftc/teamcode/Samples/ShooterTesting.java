@@ -36,6 +36,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Shooter;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -55,97 +57,80 @@ public class ShooterTesting extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor shooter = null;
-    private Servo feeder  = null;
+//    private DcMotor shooter = null;
+//    private Servo feeder  = null;
     static final double FEEDER_UP = 0;     // Clamp open position
     static final double FEEDER_DOWN = .5;    // Clamp close position
     private double shooterPower = 0;
+    private Shooter shooter = null;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        shooter = new Shooter(hardwareMap, telemetry, runtime, 1);
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        shooter  = hardwareMap.get(DcMotor.class, "shooter");
-        feeder = hardwareMap.get(Servo.class, "feeder");
-
-        shooter.setDirection(DcMotor.Direction.REVERSE);
-        feeder.setPosition(FEEDER_DOWN);
+        shooter.Initialize();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-        boolean prevxbutton = false;
-        boolean currentxbutton = false;
-        boolean prevybutton = false;
-        boolean currentybutton = false;
+        boolean prevXButton = false;
+        boolean currentXButton = false;
+        boolean prevYButton = false;
+        boolean currentYButton = false;
         boolean currentShooterState = false;
-
-
+        float userInput  = 0;
+        double F = 32767 / Shooter.SHOOTER_MAX_RPM ;
+        double P = F * 0.1;
+        double I = P * 0.1;
+        double D = 0f;
 
 
 
         // run until the end of the match (driver presses STOP)
+        shooter.SetVelocityPIDFCoefficients(P, I, D, F);
+        shooter.SetPositionPIDFCoefficients(5.0);
         while (opModeIsActive()) {
 
-            //Set the motor to default speed
-            currentybutton = gamepad1.y;
-            currentxbutton = gamepad1.x;
+            //Get the game pad inputs.
+            currentYButton = gamepad1.y;
+            currentXButton = gamepad1.x;
+            userInput = gamepad1.left_stick_y;
 
-            if(!prevybutton && currentybutton )
+            if(!prevYButton && currentYButton )
             {
-                if(currentShooterState == false){
-                    shooterPower = -0.38;
-                    shooter.setPower(shooterPower);
-                    currentShooterState = true;
-                }
-               else{
-                    shooterPower = 0;
-                    shooter.setPower(shooterPower);
-                    currentShooterState = false;
-                }
+                shooter.StartOrStop();
+                currentShooterState = shooter.GetShooterState();
             }
-
-            prevybutton = currentybutton;
+            else if(userInput != 0)
+            {
+                shooter.Start(userInput);
+                shooter.wait(200);
+            }
+            prevYButton = currentYButton;
 
             //Check if it rising edge of the button pressed.
-            if(!prevxbutton && currentxbutton && currentShooterState )
+            if(!prevXButton && currentXButton && currentShooterState )
             {
-                //fire the ring
-                fireRing(-0.42);
-                fireRing(-0.49);
-                fireRing(-0.4);
-
-//                fireRing(-0.5);
-//                fireRing(-0.54);
-//                fireRing(-0.4);
+                //fire the rings At Top level.
+                shooter.FireRingsAtTopLevel();
+                //shooter.FeederTesting();
             }
-
-            prevxbutton = currentxbutton;
+            prevXButton = currentXButton;
 
             // Show the elapsed game time and wheel power.
+            double currentVelocity = shooter.GetVelocity();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Shooter power=", "left (%.2f)", shooterPower);
-            telemetry.addData("Previous Button=", "%s", String.valueOf(prevxbutton));
+            telemetry.addData("Current Velocity", "%.2f", currentVelocity);
+            telemetry.addData("Shooter Power", "%.2f", userInput);
+            telemetry.addData("Previous Button=", "%s", String.valueOf(prevXButton));
             telemetry.update();
 
             sleep(200);
         }
 
-    }
-
-    private void fireRing(double newPower)
-    {
-        feeder.setPosition(FEEDER_UP);
-        sleep(150);
-        shooter.setPower(newPower);
-        telemetry.addData("Shooter", "left (%.2f)", newPower);
-        telemetry.update();
-        feeder.setPosition(FEEDER_DOWN);
-        sleep(620);
+        shooter.Stop();
     }
 }

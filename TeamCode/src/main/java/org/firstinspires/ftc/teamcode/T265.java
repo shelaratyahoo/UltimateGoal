@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -9,16 +9,30 @@ import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.spartronics4915.lib.T265Camera;
 
-@TeleOp(name="T265", group="Iterative Opmode")
-public class TestCameraOpMode extends OpMode
-{
-    // We treat this like a singleton because there should only ever be one object per camera
-    private static T265Camera slamra = null;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-    @Override
-    public void init() {
+public class T265 {
+
+    // this object should be a singleton because there should only ever be one object per camera
+    private static T265Camera slamra = null;
+    private ElapsedTime runtime;
+
+    private Telemetry telemetry;
+    private HardwareMap hardwareMap;
+
+    public T265(HardwareMap mainHardwareMap, Telemetry mainTelemetry, ElapsedTime elapsedTime)
+    {
+        hardwareMap = mainHardwareMap;
+        telemetry = mainTelemetry;
+        runtime = elapsedTime;
+    }
+
+
+    public void  Initialize() {
         Pose2d startingPose = new Pose2d(0, 0, new Rotation2d());
 
         if (slamra == null) {
@@ -29,19 +43,15 @@ public class TestCameraOpMode extends OpMode
         telemetry.update();
     }
 
-    @Override
-    public void init_loop() {
-        telemetry.addData("Status", "Inside init_loop...");
-        telemetry.update();
-    }
-
-    @Override
-    public void start() {
+    public void Start() {
         slamra.start();
     }
+    public void Stop() {
+        slamra.stop();
+    }
 
-    @Override
-    public void loop() {
+    public void GetXYPosition()
+    {
         final int robotRadius = 9; // inches
 
         T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
@@ -66,11 +76,6 @@ public class TestCameraOpMode extends OpMode
         telemetry.addData("X1 & Y1 dimensions", "x1=%.2f, y1=%.2f", (float)x1, (float)y1);
         telemetry.addData("X2 & Y2 dimensions", "x2=%.2f, y2=%.2f", (float)x2, (float)y2);
         telemetry.update();
-    }
-
-    @Override
-    public void stop() {
-        slamra.stop();
     }
 
 }

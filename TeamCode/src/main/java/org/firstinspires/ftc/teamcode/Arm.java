@@ -8,12 +8,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static android.os.SystemClock.sleep;
 
+
 public class Arm {
     private DcMotor arm = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    private final boolean ARM_UP = true;
-    private final boolean ARM_DOWN = false;
+    public static final boolean ARM_UP = true;
+    public static final boolean ARM_DOWN = false;
 
     private double armPower = 0;
     private boolean position = ARM_UP;

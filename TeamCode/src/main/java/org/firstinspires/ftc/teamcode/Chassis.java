@@ -51,9 +51,9 @@ public class Chassis {
 //        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Set Zero power Behavior
-//        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Set direction
         topDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -67,7 +67,16 @@ public class Chassis {
     public void moveForwardOrBackward(double power)
     {
         imuTurn = imuSensor.getImuTurn();
-        topPower = 0 + imuTurn;
+        topPower = 0; // + imuTurn;
+        leftPower = -power;// + imuTurn;
+        rightPower = power;// - imuTurn;
+        setPower();
+    }
+
+    public void moveForwardOrBackwardWithImu(double power)
+    {
+        imuTurn = imuSensor.getImuTurn();
+        topPower = 0 - imuTurn;
         leftPower = -power - imuTurn;
         rightPower = power + imuTurn;
         setPower();
@@ -76,9 +85,9 @@ public class Chassis {
     public void strafeLeftOrRight(double power)
     {
         imuTurn = imuSensor.getImuTurn();
-        topPower = -power;
-        leftPower = power/2;
-        rightPower = power/2;
+        topPower = power;
+        leftPower = -power/2;
+        rightPower = -power/2;
         setPower();
     }
 
@@ -103,9 +112,18 @@ public class Chassis {
     public void rotate(double power)
     {
         imuTurn = imuSensor.getImuTurn();
-        topPower = -power;
-        leftPower = -power;
-        rightPower = -power;
+        topPower = power/2;
+        leftPower = power/2;
+        rightPower = power/2;
+        setPower();
+    }
+
+    public void RotateWithFullPower(double power)
+    {
+        imuTurn = imuSensor.getImuTurn();
+        topPower = power;
+        leftPower = power;
+        rightPower = power;
         setPower();
     }
 

@@ -54,7 +54,7 @@ public class BlueTriForceAuto extends LinearOpMode {
         Robot Autobot = new Robot(hardwareMap, telemetry, runtime, powerFactor);
 
         Autobot.Init();
-        Autobot.ArmDown();
+
         log("Autobot.Init");
 
         ringDetection.activateTF();
@@ -65,25 +65,32 @@ public class BlueTriForceAuto extends LinearOpMode {
 
         // run until the end of the loop or the driver presses STOP
         if (opModeIsActive()) {
-            Autobot.autonomousMoveForward(1000);
-            Autobot.autonomousStrafeLeft(900);
+            //Autobot.AutoArmDown();
+
+            //Turn ON the shooter.
+            Autobot.StartOrStopShooter();
+            Autobot.autonomousMoveForward(700);
+            Autobot.autonomousStrafeRight(550);
 
             //Detect number of rings.
             numberOfRings = ringDetection.detectRing();
             ringDetection.shutdownTF();
             log("Number of Rings=" + numberOfRings);
 
-            Autobot.autonomousStrafeRight(1100);
+            Autobot.autonomousStrafeLeft(675);
 
-//            if (numberOfRings == 0){
-//                Autobot.AutoRing0();
-//            }
-//            else if (numberOfRings == 1){
-//                Autobot.AutoRing1();
-//            }
-//            else{
+            if (numberOfRings == 0)
+            {
+                Autobot.AutoRing0();
+            }
+            else if (numberOfRings == 1)
+            {
+                Autobot.AutoRing1();
+            }
+            else
+            {
                 Autobot.AutoRing4();
-//            }
+            }
         }
         ringDetection.shutdownTF();
     }

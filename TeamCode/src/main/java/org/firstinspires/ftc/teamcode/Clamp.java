@@ -23,21 +23,18 @@ public class Clamp {
         clamp.setPosition(CLOSE_CLAMP);
     }
 
-    public void CloseOrOpen(boolean userInput)
+    public void OpenOrClose()
     {
-        if(userInput)
-        {
-            double clampStatus = clamp.getPosition();
+        double clampStatus = clamp.getPosition();
 
-            if(OPEN_CLAMP == clampStatus)
-            {
-                clamp.setPosition(CLOSE_CLAMP);
-            }
-            else if (CLOSE_CLAMP == clampStatus)
-            {
-                clamp.setPosition(OPEN_CLAMP);
-            }
-            sleep(SLEEP_FOR_SERVO_MOTORS);
+        if(OPEN_CLAMP == clampStatus)
+        {
+            clamp.setPosition(CLOSE_CLAMP);
         }
+        else if (CLOSE_CLAMP == clampStatus)
+        {
+            clamp.setPosition(OPEN_CLAMP);
+        }
+        sleep(SLEEP_FOR_SERVO_MOTORS);
     }
 }

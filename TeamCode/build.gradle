@@ -19,9 +19,8 @@ repositories {
 
     maven { url = "https://dl.bintray.com/first-tech-challenge/ftcsdk/" }
 
-    maven {
-        url "https://maven.0x778.tk"
-    }
+    maven { url = "https://maven.0x778.tk" }
+
 }
 
 dependencies {

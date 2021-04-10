@@ -117,7 +117,7 @@ public class ArmAndClampTesting extends LinearOpMode {
             }
             if(!prevRBumper && currentRBumper )
             {
-                clamp.CloseOrOpen(currentRBumper);
+                clamp.OpenOrClose();
             }
 
 //            prevdownbutton = currentdownbutton;
