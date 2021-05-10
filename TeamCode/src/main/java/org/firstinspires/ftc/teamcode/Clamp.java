@@ -21,20 +21,29 @@ public class Clamp {
     {
         clamp = hardwareMap.get(Servo.class, "clamp");
         clamp.setPosition(CLOSE_CLAMP);
+
+        //Wait for the clamp to go to the desired position
+        sleep(1000);
     }
 
     public void OpenOrClose()
     {
         double clampStatus = clamp.getPosition();
+        double setClampPosition = CLOSE_CLAMP;
 
         if(OPEN_CLAMP == clampStatus)
         {
-            clamp.setPosition(CLOSE_CLAMP);
+            setClampPosition = CLOSE_CLAMP;
         }
         else if (CLOSE_CLAMP == clampStatus)
         {
-            clamp.setPosition(OPEN_CLAMP);
+            setClampPosition = OPEN_CLAMP;
         }
+        else
+        {
+            return;
+        }
+        clamp.setPosition(setClampPosition);
         sleep(SLEEP_FOR_SERVO_MOTORS);
     }
 }

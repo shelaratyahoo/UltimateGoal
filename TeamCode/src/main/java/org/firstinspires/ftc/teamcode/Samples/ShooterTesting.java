@@ -82,16 +82,10 @@ public class ShooterTesting extends LinearOpMode {
         boolean currentYButton = false;
         boolean currentShooterState = false;
         float userInput  = 0;
-        double F = 32767 / Shooter.SHOOTER_MAX_RPM ;
-        double P = F * 0.1;
-        double I = P * 0.1;
-        double D = 0f;
 
 
 
         // run until the end of the match (driver presses STOP)
-        shooter.SetVelocityPIDFCoefficients(P, I, D, F);
-        shooter.SetPositionPIDFCoefficients(5.0);
         while (opModeIsActive()) {
 
             //Get the game pad inputs.
@@ -104,18 +98,18 @@ public class ShooterTesting extends LinearOpMode {
                 shooter.StartOrStop();
                 currentShooterState = shooter.GetShooterState();
             }
-            else if(userInput != 0)
-            {
-                shooter.Start(userInput);
-                shooter.wait(200);
-            }
+//            else if(userInput != 0)
+//            {
+//                shooter.Start(userInput);
+//                shooter.wait(200);
+//            }
             prevYButton = currentYButton;
 
             //Check if it rising edge of the button pressed.
             if(!prevXButton && currentXButton && currentShooterState )
             {
                 //fire the rings At Top level.
-                shooter.FireRingsAtTopLevel();
+                shooter.FireRingsAtPowerShot();// .FireRingsAtTopLevel();
                 //shooter.FeederTesting();
             }
             prevXButton = currentXButton;
@@ -124,8 +118,8 @@ public class ShooterTesting extends LinearOpMode {
             double currentVelocity = shooter.GetVelocity();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Current Velocity", "%.2f", currentVelocity);
-            telemetry.addData("Shooter Power", "%.2f", userInput);
-            telemetry.addData("Previous Button=", "%s", String.valueOf(prevXButton));
+            //telemetry.addData("Shooter Power", "%.2f", userInput);
+            //telemetry.addData("Previous Button=", "%s", String.valueOf(prevXButton));
             telemetry.update();
 
             sleep(200);

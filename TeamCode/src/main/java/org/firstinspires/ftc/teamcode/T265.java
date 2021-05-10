@@ -39,7 +39,7 @@ public class T265 {
             slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
         }
         slamra.setPose(startingPose);
-        telemetry.addData("Starting Pose", "Initializing Pose...");
+        telemetry.addData("Starting", "Initializing T265Camera.");
         telemetry.update();
     }
 

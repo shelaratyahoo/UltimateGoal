@@ -6,12 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static android.os.SystemClock.sleep;
-import static org.firstinspires.ftc.teamcode.Shooter.SHOOTER_RING_POWERSHOT_1_SPEED;
-import static org.firstinspires.ftc.teamcode.Shooter.SHOOTER_RING_POWERSHOT_2_SPEED;
-import static org.firstinspires.ftc.teamcode.Shooter.SHOOTER_RING_POWERSHOT_3_SPEED;
-import static org.firstinspires.ftc.teamcode.Shooter.SHOOTER_RING_TOPLEVEL_1_SPEED;
-import static org.firstinspires.ftc.teamcode.Shooter.SHOOTER_RING_TOPLEVEL_2_SPEED;
-import static org.firstinspires.ftc.teamcode.Shooter.SHOOTER_RING_TOPLEVEL_3_SPEED;
 
 public class Robot {
     static final double MOVE_SERVO = 1;
@@ -64,12 +58,26 @@ public class Robot {
     {
         //Initialize hardware map
         chassis.Initialize();
-        arm.Initialize();
         clamp.Initialize();
+        arm.Initialize();
         shooter.Initialize();
         tipper.Initialize();
         intake.Initialize();
         t265.Initialize();
+    }
+
+    public void InitAuto()
+    {
+        //Initialize hardware map
+        chassis.InitializeAuto();
+        clamp.Initialize();
+        arm.Initialize();
+        shooter.Initialize();
+        tipper.Initialize();
+        intake.Initialize();
+        t265.Initialize();
+        arm.UpOrDown();
+        arm.Stop();
     }
 
     public void wait(int interval){
@@ -80,65 +88,24 @@ public class Robot {
     public void StopT265() { t265.Stop();}
     public void GetRobotPosition() { t265.GetXYPosition();}
 
-    public void ArmUp(){
-        arm.Up();
-    }
-
-    public void ArmDown(){
-        arm.Down();
-    }
-
-    public void AutoArmUp(){
-        arm.Up(5900);
-        arm.stop();
-    }
-
-    public void AutoArmDown(){
-        arm.Down(400);
-        arm.stop();
-    }
-
-    public void stopArm()
-    {
-        arm.stopArm();
-    }
-
-    public void autonomousMoveArmDown(int interval) {
-        arm.autonomousMoveArmDown(interval);
-    }
-
+    public void ArmUpOrDown(){ arm.UpOrDown(); }
+    public void ArmDown() { arm.Down(); }
+    public void ArmForceDown() {arm.ForceDown();}
+    public void ArmStop() { arm.Stop();}
     public void OpenOrCloseClamp()
     {
         clamp.OpenOrClose();
     }
-
-    private void setPowerWithPowerFactor(){
-        chassis.setPowerWithPowerFactor();
-    }
-
-    public void stopRobot(){
-        chassis.stop();
-    }
-
     public void PushOrPullTipper(){ tipper.PushOrPull(true);}
 
     public void autonomousMoveForward(int interval){
-        chassis.moveForwardOrBackward(-autonomousPower);
-        wait(interval);
-        chassis.stop();
-        wait(100);
-    }
-
-    public void autonomousMoveForwardWithImu(int interval){
-        chassis.moveForwardOrBackwardWithImu(-autonomousPower);
-        wait(interval);
+        chassis.moveForwardOrBackward(-autonomousPower, interval);
         chassis.stop();
         wait(100);
     }
 
     public void autonomousMoveBackward(int interval){
-        chassis.moveForwardOrBackward(autonomousPower);
-        wait(interval);
+        chassis.moveForwardOrBackward(-autonomousPower, interval);
         chassis.stop();
         wait(100);
     }
@@ -147,36 +114,47 @@ public class Robot {
         chassis.rotate(autonomousPower);
         wait(interval);
         chassis.stop();
+        wait(100);
     }
 
     public void autonomousRotateClockwise(int interval){
         chassis.RotateWithFullPower(-autonomousPower);
         wait(interval);
         chassis.stop();
+        wait(100);
     }
 
     public void autonomousRotateAntiClockwise(int interval){
         chassis.rotate(autonomousPower);
         wait(interval);
         chassis.stop();
+        wait(100);
     }
 
-    public void autonomousLeftAxisUp(int interval){
-        chassis.moveLeftAxis(-autonomousPower);
-        wait(interval);
+    public void autonomousLeftAxisForward(int interval){
+        chassis.moveLeftAxis(-autonomousPower, interval);
         chassis.stop();
+        wait(100);
     }
 
-    public void autonomousLeftAxisDown(int interval){
-        chassis.moveLeftAxis(autonomousPower);
-        wait(interval);
+    public void autonomousLeftAxisBackward(int interval){
+        chassis.moveLeftAxis(autonomousPower, interval);
         chassis.stop();
+        wait(100);
     }
 
-    public void autonomousRightAxis(int interval){
+    public void autonomousRightAxisForward(int interval){
         chassis.moveRightAxis(-autonomousPower);
         wait(interval);
         chassis.stop();
+        wait(100);
+    }
+
+    public void autonomousRightAxisBackward(int interval){
+        chassis.moveRightAxis(autonomousPower);
+        wait(interval);
+        chassis.stop();
+        wait(100);
     }
 
     public void autonomousStrafeLeft(int interval){
@@ -197,102 +175,314 @@ public class Robot {
         wait(100);
     }
 
-    public void moveRobot(int interval)
-    {
-        chassis.setPowerWithPowerFactor();
-        wait(interval);
-        chassis.stop();
-    }
-
     //Autonomous modes ring-0, ring-1, ring-2
-    public void AutoRing0() {
-        AutoCommon();
-
+    public void AutoRing0_BluePowerShots() {
         //Reset TriForce position
-        autonomousRotateAntiClockwise(400);
-        wait(400);
+        autonomousRotateAntiClockwise(550);
 
         //Move TriForce to the C drop zone
-        autonomousLeftAxisUp(1000);
-        wait(400);
+        autonomousLeftAxisForward(1500);
 
         //Lower down the arm.
-        arm.Down(3600);
+        arm.UpOrDown();
+        wait(200);
 
         //Drop the wobble
         clamp.OpenOrClose();
+        wait(200);
 
         //Move TriForce to launch zone
-        autonomousLeftAxisDown(100);
-        wait(400);
+        autonomousLeftAxisBackward(300);
+        autonomousRotateAntiClockwise(300);
+        autonomousLeftAxisForward(300);
+        autonomousMoveForward(400);
     }
 
-    public void AutoRing1()
-    {
-        AutoCommon();
-
+    public void AutoRing0_BlueTowerTop() {
         //Reset TriForce position
-        autonomousRotateAntiClockwise(700);
-        wait(400);
+        autonomousRotateAntiClockwise(800);
 
         //Move TriForce to the C drop zone
-        autonomousLeftAxisUp(1000);
-        wait(400);
+        autonomousLeftAxisForward(900);
 
         //Lower down the arm.
-        arm.Down(3600);
+        arm.UpOrDown();
+        wait(200);
 
         //Drop the wobble
         clamp.OpenOrClose();
+        wait(200);
 
         //Move TriForce to launch zone
-        autonomousLeftAxisDown(400);
-
-    }
-
-    public void AutoCommon()
-    {
-        //Move TriForce to the launch zone.
-        autonomousRotateClockwise(45);
-        wait(500);
-        autonomousMoveForwardWithImu(1300);
-        wait(4000);
-
-        //Fire at 1st power shot
-        shooter.FireRing(SHOOTER_RING_POWERSHOT_2_SPEED);
-        autonomousRotateClockwise(5);
-        wait(2000);
-        shooter.FireRing(SHOOTER_RING_POWERSHOT_3_SPEED);
-        autonomousRotateClockwise(7);
-        wait(1500);
-        shooter.FireRing(SHOOTER_RING_POWERSHOT_1_SPEED);
-
-        //Turn OFF the shooter.
-        shooter.Stop();
+        autonomousLeftAxisBackward(300);
         wait(100);
+        autonomousRotateAntiClockwise(300);
+        wait(100);
+        autonomousLeftAxisForward(300);
+        wait(100);
+        autonomousRightAxisBackward(800);
+        autonomousLeftAxisForward(700);
+        autonomousRightAxisBackward(800);
     }
 
-    public void AutoRing4() {
-        AutoCommon();
-
+    public void AutoRing1_BluePowerShots() {
         //Reset TriForce position
-        autonomousRotateAntiClockwise(600);
+        autonomousRotateAntiClockwise(770);
         wait(400);
 
-        //Move TriForce to the C drop zone
-        autonomousLeftAxisUp(1900);
+        //Move TriForce to the B drop zone
+        autonomousLeftAxisForward(1500);
         wait(400);
 
         //Lower down the arm.
-        arm.Down(3600);
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(500);
+    }
+
+    public void AutoRing1_BlueTowerTop() {
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(1000);
+        wait(400);
+
+        //Move TriForce to the B drop zone
+        autonomousLeftAxisForward(2200);
+        wait(400);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(500);
+    }
+
+    public void AutoRing4_BluePowerShots() {
+
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(730);
+        wait(400);
+
+        //Move TriForce to the C drop zone
+        autonomousLeftAxisForward(2280);
+        wait(400);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(1500);
+    }
+
+    public void AutoRing4_BlueTowerTop() {
+
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(900);
+        wait(400);
+
+        //Move TriForce to the C drop zone
+        autonomousLeftAxisForward(1000);
+        autonomousRotateAntiClockwise(10);
+        autonomousLeftAxisForward(1000);
+        autonomousRotateAntiClockwise(10);
+        autonomousLeftAxisForward(1000);
+        autonomousRotateAntiClockwise(10);
+        autonomousLeftAxisForward(600);
+        wait(100);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(60);
+        autonomousMoveForward(1800);
+        autonomousLeftAxisBackward(600);
+    }
+
+    public void CpRing0() {
+//
+//        //Reset TriForce position
+//        autonomousRotateAntiClockwise(400);
+//        wait(400);
+//
+//        //Move TriForce to the C drop zone
+//        autonomousLeftAxisUp(1000);
+//        wait(400);
+
+        //Lower down the arm.
+        arm.UpOrDown();
 
         //Drop the wobble
         clamp.OpenOrClose();
 
-        //Move TriForce to launch zone
-        autonomousLeftAxisDown(1800);
-
+//        //Move TriForce to launch zone
+//        autonomousLeftAxisDown(100);
+//        wait(400);
     }
+
+    public void AutoRing0_RedPowerShots() {
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(1200);
+
+        //Move TriForce to the C drop zone
+        autonomousLeftAxisForward(1500);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(300);
+        autonomousRotateAntiClockwise(300);
+        autonomousLeftAxisForward(300);
+        autonomousMoveForward(400);
+    }
+
+    public void AutoRing0_RedTowerTop() {
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(800);//verify the rotation
+
+        //Move TriForce to the C drop zone
+        autonomousLeftAxisForward(900);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(300);
+        wait(100);
+        autonomousRotateAntiClockwise(300);
+        wait(100);
+        autonomousLeftAxisForward(300);
+        wait(100);
+        autonomousRightAxisBackward(800);
+        autonomousLeftAxisForward(700);
+        autonomousRightAxisBackward(800);
+    }
+
+    public void AutoRing1_RedPowerShots() {
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(770);
+        wait(400);
+
+        //Move TriForce to the B drop zone
+        autonomousLeftAxisForward(1500);
+        wait(400);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(500);
+    }
+
+    public void AutoRing1_RedTowerTop() {
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(500);//verify the rotation
+        wait(400);
+
+        //Move TriForce to the B drop zone
+        autonomousLeftAxisForward(2200);
+        wait(400);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(500);
+    }
+
+    public void AutoRing4_RedPowerShots() {
+
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(950);
+        wait(400);
+
+        //Move TriForce to the C drop zone
+        autonomousLeftAxisForward(2280);
+        wait(400);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(1500);
+    }
+
+    public void AutoRing4_RedTowerTop() {
+
+        //Reset TriForce position
+        autonomousRotateAntiClockwise(800);
+        wait(400);
+
+        //Move TriForce to the C drop zone
+        autonomousLeftAxisForward(1000);
+        autonomousRotateAntiClockwise(10);
+        autonomousLeftAxisForward(1000);
+        autonomousRotateAntiClockwise(10);
+        autonomousLeftAxisForward(1000);
+        autonomousRotateAntiClockwise(10);
+        autonomousLeftAxisForward(600);
+        wait(100);
+
+        //Lower down the arm.
+        arm.UpOrDown();
+        wait(200);
+
+        //Drop the wobble
+        clamp.OpenOrClose();
+        wait(200);
+
+        //Move TriForce to launch zone
+        autonomousLeftAxisBackward(60);
+        autonomousMoveBackward(1800);
+        autonomousLeftAxisBackward(600);
+    }
+
 
     public void ForwardOrBackward(double power){
         chassis.moveForwardOrBackward(power);

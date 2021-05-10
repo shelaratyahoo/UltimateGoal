@@ -51,6 +51,32 @@ public class Chassis {
 //        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Set Zero power Behavior
+        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        //Set direction
+        topDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //Initialize the IMU Sensor
+        imuSensor.Initialize();
+    }
+
+    public void InitializeAuto ()
+    {
+        //Initialize hardware map
+        topDrive  = hardwareMap.get(DcMotor.class, "top");
+        leftDrive  = hardwareMap.get(DcMotor.class, "left");
+        rightDrive = hardwareMap.get(DcMotor.class, "right");
+
+        //Set mode run using encoder
+//        topDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //Set Zero power Behavior
         topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -66,11 +92,24 @@ public class Chassis {
 
     public void moveForwardOrBackward(double power)
     {
+        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         imuTurn = imuSensor.getImuTurn();
         topPower = 0; // + imuTurn;
         leftPower = -power;// + imuTurn;
         rightPower = power;// - imuTurn;
         setPower();
+    }
+
+    public void moveForwardOrBackward(double power, int interval)
+    {
+        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        imuTurn = imuSensor.getImuTurn();
+        topPower = 0; // + imuTurn;
+        leftPower = -power;// + imuTurn;
+        rightPower = power;// - imuTurn;
+        setPower();
+        wait(interval);
+        topDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void moveForwardOrBackwardWithImu(double power)
@@ -98,6 +137,18 @@ public class Chassis {
         leftPower = 0;// - imuTurn;
         rightPower = -power;// + imuTurn;
         setPower();
+    }
+
+    public void moveLeftAxis(double power, int interval)
+    {
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        imuTurn = imuSensor.getImuTurn();
+        topPower = power;// + imuTurn;
+        leftPower = 0;// - imuTurn;
+        rightPower = -power;// + imuTurn;
+        setPower();
+        wait(interval);
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void moveRightAxis(double power)

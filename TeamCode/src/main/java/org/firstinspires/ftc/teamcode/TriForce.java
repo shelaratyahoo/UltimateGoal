@@ -19,20 +19,6 @@ public class TriForce extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        //Create RingDetection object.
-        RingDetection ringDetection = new RingDetection(hardwareMap, telemetry, runtime);
-        Robot robot = new Robot(hardwareMap, telemetry, runtime, powerFactor);
-
-        //Initialize the robot object
-        robot.Init();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
-
         //Gamepad data
         float gamepad1_left_stick_y = 0;
         float gamepad1_left_stick_x = 0;
@@ -63,10 +49,28 @@ public class TriForce extends LinearOpMode {
         boolean gamepad1_y = false;
         boolean gamepad1_yPrev = false;
 
+        telemetry.addData("WAIT", "Please wait for the robot initialization...");
+        telemetry.update();
+
+        //Create RingDetection object.
+        //RingDetection ringDetection = new RingDetection(hardwareMap, telemetry, runtime);
+        Robot robot = new Robot(hardwareMap, telemetry, runtime, powerFactor);
+
+        //Initialize the robot object
+        robot.Init();
+
+        telemetry.addData("READY", "Now press the PLAY button...");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        runtime.reset();
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Get the robot location.
-            robot.GetRobotPosition();
+            //robot.GetRobotPosition();
 
             //Get input from the gamepad.
             gamepad1_left_stick_y = gamepad1.left_stick_y;
@@ -106,17 +110,13 @@ public class TriForce extends LinearOpMode {
             {
                 robot.Rotate(gamepad1_right_stick_x);
             }
-            else if(gamepad1_right_trigger > 0)
+            else if(!gamepad1_dpad_leftPrev && gamepad1_dpad_left)
             {
-                robot.ArmUp();
-            }
-            else if(gamepad1_left_trigger > 0)
-            {
-                robot.ArmDown();
+                robot.ArmForceDown();
             }
             else if(!gamepad1_dpad_upPrev && gamepad1_dpad_up)
             {
-                robot.RotateIntakeInForwardDirection();
+                robot.RotateIntakeInReverseDirection();
             }
             else if(gamepad1_dpad_upPrev && !gamepad1_dpad_up)
             {
@@ -124,7 +124,7 @@ public class TriForce extends LinearOpMode {
             }
             else if(!gamepad1_dpad_downPrev && gamepad1_dpad_down)
             {
-                robot.RotateIntakeInReverseDirection();
+                robot.RotateIntakeInForwardDirection();
             }
             else if(gamepad1_dpad_downPrev && !gamepad1_dpad_down)
             {
@@ -136,7 +136,6 @@ public class TriForce extends LinearOpMode {
             }
             else if(!gamepad1_yPrev && gamepad1_y)
             {
-                telemetry.addLine("Inside StartOrStopShooter");
                 robot.StartOrStopShooter();
             }
             else if(!gamepad1_xPrev && gamepad1_x)
@@ -147,19 +146,28 @@ public class TriForce extends LinearOpMode {
             {
                 robot.FireRingsAtPowerShot();
             }
-            else if(!gamepad1_left_bumperPrev && gamepad1_left_bumper)
+            else if(gamepad1_right_trigger > 0)
             {
-                robot.PushOrPullTipper();
+                robot.ArmUpOrDown();
             }
             else if(!gamepad1_right_bumperPrev && gamepad1_right_bumper)
             {
                 robot.OpenOrCloseClamp();
             }
+            else if(gamepad1_left_trigger > 0)
+            {
+                //Open for any control;
+            }
+            else if(!gamepad1_left_bumperPrev && gamepad1_left_bumper)
+            {
+                //Open for any control;
+            }
             else
             {
                 robot.StopRobot();
-                robot.stopArm();
+                robot.ArmStop();
             }
+            gamepad1_dpad_leftPrev = gamepad1_dpad_left;
             gamepad1_dpad_upPrev = gamepad1_dpad_up;
             gamepad1_dpad_downPrev = gamepad1_dpad_down;
             gamepad1_aPrev = gamepad1_a;
@@ -169,9 +177,6 @@ public class TriForce extends LinearOpMode {
             gamepad1_left_bumperPrev = gamepad1_left_bumper;
             gamepad1_right_bumperPrev = gamepad1_right_bumper;
 
-            // Show the elapsed game time.
-            telemetry.addLine("Run Time: " + runtime.toString());
-            telemetry.update();
             sleep(SLEEP_TRIFORCE);
         }
     }

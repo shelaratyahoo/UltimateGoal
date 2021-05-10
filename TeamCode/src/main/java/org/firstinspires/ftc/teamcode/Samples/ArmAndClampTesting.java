@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Samples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,7 +39,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Arm;
 import org.firstinspires.ftc.teamcode.Clamp;
-
+@Disabled
 @TeleOp(name="ArmAndClampTesting", group="Linear Opmode")
 public class ArmAndClampTesting extends LinearOpMode {
 
@@ -73,6 +74,8 @@ public class ArmAndClampTesting extends LinearOpMode {
         boolean prevRBumper = false;
         boolean currentRBumper = false;
         boolean armPosition = false;
+        boolean currentLBumper = false;
+        boolean prevLBumper = false;
         final boolean ARM_UP = true;
         final boolean ARM_DOWN = false;
 
@@ -80,54 +83,38 @@ public class ArmAndClampTesting extends LinearOpMode {
         while (opModeIsActive()) {
 
             //Set the motor to default speed
+            currentRBumper = gamepad1.right_bumper;
+            currentLBumper =  gamepad1.left_bumper;
             currentdownbutton = gamepad1.dpad_down;
             currentupbutton = gamepad1.dpad_up;
-            currentRBumper = gamepad1.right_bumper;
 
-            if(!prevdownbutton && currentdownbutton )
+
+            if(!prevLBumper && currentLBumper )
             {
-                arm.Down();
-                armPosition = ARM_DOWN;
-
-//                if(armPosition == ARM_DOWN){
-//                    arm.Up();
-//                    armPosition = ARM_UP;
-//                }
-//               else{
-//                    arm.Down();
-//                    armPosition = ARM_DOWN;
-//                }
+                arm.UpOrDown();
             }
-            else if(!prevupbutton && currentupbutton )
-            {
-                arm.Up();
-                armPosition = ARM_UP;
-
-//                if(armPosition == ARM_DOWN){
-//                    arm.Up();
-//                    armPosition = ARM_UP;
-//                }
-//               else{
-//                    arm.Down();
-//                    armPosition = ARM_DOWN;
-//                }
-            }
-            else {
-                arm.stop();
-            }
-            if(!prevRBumper && currentRBumper )
+            else if(!prevRBumper && currentRBumper )
             {
                 clamp.OpenOrClose();
             }
+            else if(!prevdownbutton && currentdownbutton)
+            {
+                arm.DPadDown();
+            }
+            else if(!prevupbutton && currentupbutton)
+            {
+                arm.DPadUp();
+            }
 
-//            prevdownbutton = currentdownbutton;
-//            prevupbutton = currentupbutton;
+            prevLBumper = currentLBumper;
+            prevRBumper = currentRBumper;
+            prevdownbutton = currentdownbutton;
+            prevupbutton = currentupbutton;
 
-            // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Previous Button=", "%s", String.valueOf(prevupbutton));
+            telemetry.addData("Previous LBumper=", "%s", String.valueOf(prevLBumper));
+            telemetry.addData("Current position=", "%s", String.valueOf(arm.GetCurrentPosition()));
             telemetry.update();
-
             sleep(200);
         }
 

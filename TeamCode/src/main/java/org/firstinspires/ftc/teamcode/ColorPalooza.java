@@ -30,18 +30,19 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-@Autonomous(name="Blue TriForce Auto", group = "Linear Opmode")
-public class BlueTriForceAuto extends LinearOpMode {
+@Disabled
+@Autonomous(name="Color Palooza", group = "Linear Opmode")
+public class ColorPalooza extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime;
     private int numberOfRings;
     static final double powerFactor = 0.7;
 
-    public BlueTriForceAuto(){
+    public ColorPalooza(){
         runtime  = new ElapsedTime();
         numberOfRings = 0;
     }
@@ -54,9 +55,13 @@ public class BlueTriForceAuto extends LinearOpMode {
         Robot Autobot = new Robot(hardwareMap, telemetry, runtime, powerFactor);
 
         Autobot.Init();
+        log("Autobot.Init done");
 
-        log("Autobot.Init");
+        //Raise the arm up.
+        Autobot.ArmUpOrDown();
+        log("Raise the arm up.");
 
+        //Activate Tensor Flow.
         ringDetection.activateTF();
         log("Tensor Flow activated");
 
@@ -65,31 +70,30 @@ public class BlueTriForceAuto extends LinearOpMode {
 
         // run until the end of the loop or the driver presses STOP
         if (opModeIsActive()) {
-            //Autobot.AutoArmDown();
 
-            //Turn ON the shooter.
-            Autobot.StartOrStopShooter();
-            Autobot.autonomousMoveForward(700);
-            Autobot.autonomousStrafeRight(550);
+//            //Turn ON the shooter.
+//            Autobot.StartOrStopShooter();
+//            Autobot.autonomousMoveForward(700);
+//            Autobot.autonomousStrafeRight(550);
 
-            //Detect number of rings.
-            numberOfRings = ringDetection.detectRing();
-            ringDetection.shutdownTF();
-            log("Number of Rings=" + numberOfRings);
-
-            Autobot.autonomousStrafeLeft(675);
+//            //Detect number of rings.
+//            numberOfRings = ringDetection.detectRing();
+//            ringDetection.shutdownTF();
+//            log("Number of Rings=" + numberOfRings);
+//
+//            Autobot.autonomousStrafeLeft(675);
 
             if (numberOfRings == 0)
             {
-                Autobot.AutoRing0();
+                Autobot.CpRing0();
             }
             else if (numberOfRings == 1)
             {
-                Autobot.AutoRing1();
+                Autobot.CpRing0();
             }
             else
             {
-                Autobot.AutoRing4();
+                Autobot.CpRing0();
             }
         }
         ringDetection.shutdownTF();
