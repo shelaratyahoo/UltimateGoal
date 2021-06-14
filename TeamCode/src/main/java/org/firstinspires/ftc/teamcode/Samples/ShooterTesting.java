@@ -80,6 +80,8 @@ public class ShooterTesting extends LinearOpMode {
         boolean currentXButton = false;
         boolean prevYButton = false;
         boolean currentYButton = false;
+        boolean prevBButton = false;
+        boolean currBButton = false;
         boolean currentShooterState = false;
         float userInput  = 0;
 
@@ -91,35 +93,31 @@ public class ShooterTesting extends LinearOpMode {
             //Get the game pad inputs.
             currentYButton = gamepad1.y;
             currentXButton = gamepad1.x;
+            currBButton =gamepad1.b;
             userInput = gamepad1.left_stick_y;
 
             if(!prevYButton && currentYButton )
             {
-                shooter.StartOrStop();
+                shooter.StartOrStop(true);
                 currentShooterState = shooter.GetShooterState();
             }
-//            else if(userInput != 0)
-//            {
-//                shooter.Start(userInput);
-//                shooter.wait(200);
-//            }
-            prevYButton = currentYButton;
 
             //Check if it rising edge of the button pressed.
-            if(!prevXButton && currentXButton && currentShooterState )
+            else if(!prevXButton && currentXButton && currentShooterState )
             {
                 //fire the rings At Top level.
                 shooter.FireRingsAtPowerShot();// .FireRingsAtTopLevel();
-                //shooter.FeederTesting();
             }
+            else if(!prevBButton && currBButton)
+            {
+                shooter.FeederTesting();
+            }
+            prevYButton = currentYButton;
             prevXButton = currentXButton;
+            prevBButton = currBButton;
 
             // Show the elapsed game time and wheel power.
-            double currentVelocity = shooter.GetVelocity();
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Current Velocity", "%.2f", currentVelocity);
-            //telemetry.addData("Shooter Power", "%.2f", userInput);
-            //telemetry.addData("Previous Button=", "%s", String.valueOf(prevXButton));
+            telemetry.addData("Current Velocity", "%.2f", shooter.GetVelocity());
             telemetry.update();
 
             sleep(200);

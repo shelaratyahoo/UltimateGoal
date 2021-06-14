@@ -74,7 +74,7 @@ public class BlueTowerTop extends LinearOpMode {
             log("Number of Rings=" + numberOfRings);
 
             //Turn ON the shooter.
-            Autobot.StartOrStopShooter();
+            Autobot.StartOrStopShootingTowerTop();
 
             //Move the robot to the shooting position.
             Autobot.autonomousRotateClockwise(150);

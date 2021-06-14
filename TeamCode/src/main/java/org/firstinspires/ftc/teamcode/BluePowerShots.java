@@ -74,10 +74,10 @@ public class BluePowerShots extends LinearOpMode {
             log("Number of Rings=" + numberOfRings);
 
             //Turn ON the shooter.
-            Autobot.StartOrStopShooter();
+            Autobot.StartOrStopShootingPowerShot();
 
             //Move the robot to the shooting position.
-            Autobot.autonomousRotateAntiClockwise(350); //400
+            Autobot.autonomousRotateAntiClockwise(400); //400
             sleep(200);
             Autobot.autonomousMoveForward(1000);
             sleep(200);

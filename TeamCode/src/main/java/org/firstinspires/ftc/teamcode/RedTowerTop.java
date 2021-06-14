@@ -74,15 +74,17 @@ public class RedTowerTop extends LinearOpMode {
             log("Number of Rings=" + numberOfRings);
 
             //Turn ON the shooter.
-            Autobot.StartOrStopShooter();
+            Autobot.StartOrStopShootingTowerTop();
 
             //Move the robot to the shooting position.
-            Autobot.autonomousRotateAntiClockwise(150);
+            Autobot.autonomousRotateAntiClockwise(350);
             sleep(200);
-            Autobot.autonomousMoveForward(1000);
+
+            Autobot.autonomousMoveForward(700);
             sleep(200);
-            Autobot.autonomousRotateClockwise(167);
+            Autobot.autonomousRotateClockwise(75);
             sleep(200);
+
             Autobot.FireRingsAtTopLevel();
             sleep(200);
 
@@ -99,8 +101,8 @@ public class RedTowerTop extends LinearOpMode {
                 Autobot.AutoRing4_RedTowerTop();
             }
         }
-        ringDetection.shutdownTF();
         Autobot.ArmDown();
+        ringDetection.shutdownTF();
     }
 
     public void log(String logInfo)

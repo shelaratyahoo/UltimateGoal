@@ -39,6 +39,8 @@ public class TriForce extends LinearOpMode {
         boolean gamepad1_dpad_leftPrev = false;
         boolean gamepad1_dpad_right = false;
         boolean gamepad1_dpad_rightPrev = false;
+        boolean gamepad1_left_stick_button = false;
+        boolean gamepad1_left_stick_buttonPrev = false;
 
         boolean gamepad1_a = false;
         boolean gamepad1_aPrev = false;
@@ -93,7 +95,7 @@ public class TriForce extends LinearOpMode {
             gamepad1_dpad_down = gamepad1.dpad_down;
             gamepad1_dpad_left = gamepad1.dpad_left;
             gamepad1_dpad_right = gamepad1.dpad_right;
-
+            gamepad1_left_stick_button = gamepad1.left_stick_button;
             if(gamepad1_left_stick_y != 0)
             {
                 robot.ForwardOrBackward(gamepad1_left_stick_y);
@@ -136,7 +138,7 @@ public class TriForce extends LinearOpMode {
             }
             else if(!gamepad1_yPrev && gamepad1_y)
             {
-                robot.StartOrStopShooter();
+                robot.StartOrStopShootingTowerTop();
             }
             else if(!gamepad1_xPrev && gamepad1_x)
             {
@@ -160,12 +162,17 @@ public class TriForce extends LinearOpMode {
             }
             else if(!gamepad1_left_bumperPrev && gamepad1_left_bumper)
             {
-                //Open for any control;
+                robot.StartOrStopShootingPowerShot();
+            }
+            else if(!gamepad1_left_stick_buttonPrev && gamepad1_left_stick_button)
+            {
+                robot.InitializeT265();
             }
             else
             {
                 robot.StopRobot();
                 robot.ArmStop();
+                robot.GetRobotPosition();
             }
             gamepad1_dpad_leftPrev = gamepad1_dpad_left;
             gamepad1_dpad_upPrev = gamepad1_dpad_up;
@@ -176,6 +183,7 @@ public class TriForce extends LinearOpMode {
             gamepad1_bPrev = gamepad1_b;
             gamepad1_left_bumperPrev = gamepad1_left_bumper;
             gamepad1_right_bumperPrev = gamepad1_right_bumper;
+            gamepad1_left_stick_buttonPrev =gamepad1_left_stick_button;
 
             sleep(SLEEP_TRIFORCE);
         }

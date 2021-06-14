@@ -16,6 +16,8 @@ public class Robot {
     static final double SERVO_STOP = 0.5;
     static final double SERVO_ROTATE_CLOCKWISE = 1;
     static final double SERVO_ROTATE_ANTI_CLOCKWISE = 0;
+    static final boolean SHOOT_TOWERTOP = true;
+    static final boolean SHOOT_POWERSHOT = false;
 
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -26,6 +28,7 @@ public class Robot {
     private Tipper tipper = null;
     private Intake intake = null;
     private T265 t265 = null;
+    private LEDClass ledClass = null;
 
     double leftPower = 0;
     double rightPower = 0;
@@ -49,6 +52,7 @@ public class Robot {
         tipper = new Tipper(mainHardwareMap);
         intake = new Intake(mainHardwareMap, mainTelemetry, elapsedTime, powerFactor);
         t265 = new T265(mainHardwareMap, mainTelemetry, elapsedTime);
+        ledClass = new LEDClass(mainHardwareMap, mainTelemetry, elapsedTime);
 
         _powerFactor = powerFactor;
         autonomousPower = _powerFactor * 1;
@@ -63,7 +67,8 @@ public class Robot {
         shooter.Initialize();
         tipper.Initialize();
         intake.Initialize();
-        t265.Initialize();
+        //t265.Initialize();
+        ledClass.Initialize();
     }
 
     public void InitAuto()
@@ -75,7 +80,8 @@ public class Robot {
         shooter.Initialize();
         tipper.Initialize();
         intake.Initialize();
-        t265.Initialize();
+        //t265.Initialize();
+        ledClass.Initialize();
         arm.UpOrDown();
         arm.Stop();
     }
@@ -86,7 +92,10 @@ public class Robot {
 
     public void StartT265() { t265.Start();}
     public void StopT265() { t265.Stop();}
+    public void InitializeT265() { t265.Initialize();}
     public void GetRobotPosition() { t265.GetXYPosition();}
+    public boolean IsGreenZone() {return t265.IsGreenZone();}
+    public void StopTracking() { t265.Free();}
 
     public void ArmUpOrDown(){ arm.UpOrDown(); }
     public void ArmDown() { arm.Down(); }
@@ -96,6 +105,11 @@ public class Robot {
     {
         clamp.OpenOrClose();
     }
+    public void RedLedOn() { ledClass.RedOn();}
+    public void GreenLedOn() { ledClass.GreenOn();}
+    public void TurnBothOn() { ledClass.TurnLedsOn();}
+    public void TurnBothOff() { ledClass.TurnLedsOff();}
+
     public void PushOrPullTipper(){ tipper.PushOrPull(true);}
 
     public void autonomousMoveForward(int interval){
@@ -105,7 +119,7 @@ public class Robot {
     }
 
     public void autonomousMoveBackward(int interval){
-        chassis.moveForwardOrBackward(-autonomousPower, interval);
+        chassis.moveForwardOrBackward(autonomousPower, interval);
         chassis.stop();
         wait(100);
     }
@@ -181,7 +195,7 @@ public class Robot {
         autonomousRotateAntiClockwise(550);
 
         //Move TriForce to the C drop zone
-        autonomousLeftAxisForward(1500);
+        autonomousLeftAxisForward(1200);
 
         //Lower down the arm.
         arm.UpOrDown();
@@ -270,11 +284,11 @@ public class Robot {
     public void AutoRing4_BluePowerShots() {
 
         //Reset TriForce position
-        autonomousRotateAntiClockwise(730);
+        autonomousRotateAntiClockwise(760);
         wait(400);
 
         //Move TriForce to the C drop zone
-        autonomousLeftAxisForward(2280);
+        autonomousLeftAxisForward(2340);
         wait(400);
 
         //Lower down the arm.
@@ -343,9 +357,11 @@ public class Robot {
     public void AutoRing0_RedPowerShots() {
         //Reset TriForce position
         autonomousRotateAntiClockwise(1200);
+        wait(200);
 
         //Move TriForce to the C drop zone
-        autonomousLeftAxisForward(1500);
+        autonomousLeftAxisForward(1300);
+        wait(200);
 
         //Lower down the arm.
         arm.UpOrDown();
@@ -356,18 +372,20 @@ public class Robot {
         wait(200);
 
         //Move TriForce to launch zone
-        autonomousLeftAxisBackward(300);
-        autonomousRotateAntiClockwise(300);
-        autonomousLeftAxisForward(300);
-        autonomousMoveForward(400);
+        autonomousLeftAxisBackward(400);
+        wait(200);
+        autonomousRotateClockwise(100);
+        wait(200);
+        autonomousMoveBackward(800);
+        wait(200);
     }
 
     public void AutoRing0_RedTowerTop() {
         //Reset TriForce position
-        autonomousRotateAntiClockwise(800);//verify the rotation
+        autonomousRotateAntiClockwise(1000);//verify the rotation
 
         //Move TriForce to the C drop zone
-        autonomousLeftAxisForward(900);
+        autonomousLeftAxisForward(1300);
 
         //Lower down the arm.
         arm.UpOrDown();
@@ -380,22 +398,23 @@ public class Robot {
         //Move TriForce to launch zone
         autonomousLeftAxisBackward(300);
         wait(100);
-        autonomousRotateAntiClockwise(300);
+        autonomousRotateClockwise(300);
+        wait(100);
+        autonomousLeftAxisForward(1200);
+        wait(100);
+        autonomousRotateAntiClockwise(300);//verify the rotation
         wait(100);
         autonomousLeftAxisForward(300);
         wait(100);
-        autonomousRightAxisBackward(800);
-        autonomousLeftAxisForward(700);
-        autonomousRightAxisBackward(800);
     }
 
     public void AutoRing1_RedPowerShots() {
         //Reset TriForce position
-        autonomousRotateAntiClockwise(770);
+        autonomousRotateAntiClockwise(900);
         wait(400);
 
         //Move TriForce to the B drop zone
-        autonomousLeftAxisForward(1500);
+        autonomousLeftAxisForward(1300);
         wait(400);
 
         //Lower down the arm.
@@ -407,16 +426,16 @@ public class Robot {
         wait(200);
 
         //Move TriForce to launch zone
-        autonomousLeftAxisBackward(500);
+        autonomousLeftAxisBackward(700);
     }
 
     public void AutoRing1_RedTowerTop() {
         //Reset TriForce position
-        autonomousRotateAntiClockwise(500);//verify the rotation
+        autonomousRotateAntiClockwise(750);//verify the rotation
         wait(400);
 
         //Move TriForce to the B drop zone
-        autonomousLeftAxisForward(2200);
+        autonomousLeftAxisForward(1800);
         wait(400);
 
         //Lower down the arm.
@@ -429,12 +448,14 @@ public class Robot {
 
         //Move TriForce to launch zone
         autonomousLeftAxisBackward(500);
+        autonomousRotateClockwise(300);
+        autonomousLeftAxisBackward(800);
     }
 
     public void AutoRing4_RedPowerShots() {
 
         //Reset TriForce position
-        autonomousRotateAntiClockwise(950);
+        autonomousRotateAntiClockwise(1000);
         wait(400);
 
         //Move TriForce to the C drop zone
@@ -450,13 +471,13 @@ public class Robot {
         wait(200);
 
         //Move TriForce to launch zone
-        autonomousLeftAxisBackward(1500);
+        autonomousLeftAxisBackward(1700);
     }
 
     public void AutoRing4_RedTowerTop() {
 
         //Reset TriForce position
-        autonomousRotateAntiClockwise(800);
+        autonomousRotateAntiClockwise(1000);
         wait(400);
 
         //Move TriForce to the C drop zone
@@ -465,8 +486,8 @@ public class Robot {
         autonomousLeftAxisForward(1000);
         autonomousRotateAntiClockwise(10);
         autonomousLeftAxisForward(1000);
-        autonomousRotateAntiClockwise(10);
-        autonomousLeftAxisForward(600);
+        autonomousRotateClockwise(10);
+        autonomousLeftAxisForward(750);
         wait(100);
 
         //Lower down the arm.
@@ -478,9 +499,9 @@ public class Robot {
         wait(200);
 
         //Move TriForce to launch zone
-        autonomousLeftAxisBackward(60);
-        autonomousMoveBackward(1800);
-        autonomousLeftAxisBackward(600);
+        autonomousLeftAxisBackward(1300);
+        autonomousMoveForward(300);
+//        autonomousLeftAxisBackward(600);
     }
 
 
@@ -508,19 +529,53 @@ public class Robot {
         chassis.stop();
     }
 
-    public void StartOrStopShooter()
+    public boolean IsShootingArea()
     {
-        shooter.StartOrStop();
+        return IsGreenZone();
+    }
+
+    public void TurnOnOffLeds()
+    {
+        if(shooter.IsShooterOn())
+        {
+            if(IsShootingArea())
+            {
+                GreenLedOn();
+            }
+            else
+            {
+                RedLedOn();
+            }
+        }
+        else if(shooter.IsShooterOff())
+        {
+            TurnBothOff();
+        }
+    }
+    public void StartOrStopShootingTowerTop()
+    {
+        shooter.StartOrStop(SHOOT_TOWERTOP);
+        TurnOnOffLeds();
+    }
+
+    public void StartOrStopShootingPowerShot()
+    {
+        shooter.StartOrStop(SHOOT_POWERSHOT);
+        TurnOnOffLeds();
     }
 
     public void FireRingsAtPowerShot()
     {
+        GreenLedOn();
         shooter.FireRingsAtPowerShot();
+        RedLedOn();
     }
 
     public void FireRingsAtTopLevel()
     {
+        GreenLedOn();
         shooter.FireRingsAtTopLevel();
+        RedLedOn();
     }
 
     public void StartOrStopIntake()

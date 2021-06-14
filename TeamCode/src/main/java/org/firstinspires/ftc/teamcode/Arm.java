@@ -4,7 +4,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static android.os.SystemClock.sleep;
@@ -12,11 +14,12 @@ import static android.os.SystemClock.sleep;
 
 public class Arm {
     private DcMotorEx arm = null;
+    private TouchSensor touch = null;
     private ElapsedTime runtime = null;
 
     public static final double ARM_START = 1;
     public static final double ARM_STOP = 0;
-    public static final int ARM_MAX_POS = 6000; //5600
+    public static final int ARM_MAX_POS = 5600; //5600 //6000
     public static final int ARM_MIN_POS = 0;
     public static final  double SET_POSITION_PIDF_COEFFICIENTS = 7.1;
     public static final boolean ARM_UP = true;
@@ -38,6 +41,7 @@ public class Arm {
 
     public void Initialize(){
         arm = hardwareMap.get(DcMotorEx.class, "arm");
+        touch = hardwareMap.get(TouchSensor.class, "touch");
 
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -70,7 +74,7 @@ public class Arm {
 
         SetTargetPosition(setTargetPosition);
         runtime.reset();
-        while((goUp && currentPosition < setTargetPosition ) ||
+        while((goUp && currentPosition < setTargetPosition && !touch.isPressed() ) ||
               (!goUp && currentPosition > setTargetPosition ))
         {
             Start();
@@ -91,7 +95,7 @@ public class Arm {
         int currentPosition = GetCurrentPosition();
         SetTargetPosition(ARM_MAX_POS);
         runtime.reset();
-        while(currentPosition < ARM_MAX_POS )
+        while(currentPosition < ARM_MAX_POS && !touch.isPressed())
         {
             Start();
             if(arm.isBusy()) {
@@ -138,7 +142,7 @@ public class Arm {
             if(arm.isBusy()) {
                 wait(200);
             }
-            if(runtime.seconds() > 5)
+            if(runtime.seconds() > 3)
             {
                 break;
             }

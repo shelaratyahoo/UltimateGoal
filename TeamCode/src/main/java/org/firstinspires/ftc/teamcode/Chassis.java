@@ -189,16 +189,16 @@ public class Chassis {
         topDrive.setPower(topPower * _powerFactor);
         leftDrive.setPower(leftPower  * _powerFactor);
         rightDrive.setPower(rightPower * _powerFactor);
-        String logInfo = String.format("top=%.3f, left=%.3f, right=%.3f, imu=%.3f", topPower, leftPower, rightPower, imuTurn);
-        log(logInfo);
+//        String logInfo = String.format("top=%.3f, left=%.3f, right=%.3f, imu=%.3f", topPower, leftPower, rightPower, imuTurn);
+//        log(logInfo);
     }
 
     private void setPower(){
         topDrive.setPower(topPower);
         leftDrive.setPower(leftPower);
         rightDrive.setPower(rightPower);
-        String logInfo = String.format("top=%.3f, left=%.3f, right=%.3f, imu=%.3f", topPower, leftPower, rightPower, imuTurn);
-        log(logInfo);
+//        String logInfo = String.format("top=%.3f, left=%.3f, right=%.3f, imu=%.3f", topPower, leftPower, rightPower, imuTurn);
+//        log(logInfo);
     }
 
     private void wait(int interval){

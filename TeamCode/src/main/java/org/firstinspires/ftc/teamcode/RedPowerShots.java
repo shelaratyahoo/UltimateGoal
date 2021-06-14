@@ -66,7 +66,7 @@ public class RedPowerShots extends LinearOpMode {
         // run until the end of the loop or the driver presses STOP
         if (opModeIsActive()) {
             Autobot.autonomousMoveForward(800);
-            Autobot.autonomousRotateAntiClockwise(150);
+            Autobot.autonomousRotateAntiClockwise(250);
 
             //Detect number of rings.
             numberOfRings = ringDetection.detectRing();
@@ -74,23 +74,24 @@ public class RedPowerShots extends LinearOpMode {
             log("Number of Rings=" + numberOfRings);
 
             //Turn ON the shooter.
-            Autobot.StartOrStopShooter();
+            Autobot.StartOrStopShootingPowerShot();
 
             //Move the robot to the shooting position.
-            Autobot.autonomousRotateClockwise(350); //400
+            Autobot.autonomousRotateClockwise(187); //400
             sleep(200);
-            Autobot.autonomousMoveForward(1000);
+            Autobot.autonomousMoveForward(1200);
             sleep(200);
-            Autobot.FireRingsAtPowerShot();
 
-            sleep(200);
-            Autobot.autonomousRotateAntiClockwise(12);
-            sleep(200);
             Autobot.FireRingsAtPowerShot();
+            sleep(200);
+            Autobot.autonomousRotateAntiClockwise(30);
+            sleep(200);
 
+            Autobot.FireRingsAtPowerShot();
             sleep(200);
-            Autobot.autonomousRotateAntiClockwise(12);
+            Autobot.autonomousRotateAntiClockwise(30);
             sleep(200);
+
             Autobot.FireRingsAtPowerShot();
 
             if (numberOfRings == 0)

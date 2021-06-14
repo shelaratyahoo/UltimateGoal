@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -23,20 +21,11 @@ public class Shooter {
     public static final double FEEDER_UP = 0;     // Clamp open position
     public static final double FEEDER_DOWN = .5;    // Clamp close position
 
-    public static final double SHOOTER_RPM = 1000;
+    public static final double SHOOTER_TOWERTOP_RPM = 640;
+    public static final double SHOOTER_POWERSHOT_RPM = 560;//1000;
+    public static final double SHOOTER_RPM = 520; //1000;
     public static final double SHOOTER_STOP = 0;
     public static final double SHOOTER_MAX_RPM = 1940; //1800;
-    public static final double SHOOTER_TOPLEVEL_RPM = 1000;
-    public static final double SHOOTER_POWERSHOT_RPM = 1000;
-
-    static final double SHOOTER_RING_POWERSHOT_1_SPEED = -0.37;
-    static final double SHOOTER_RING_POWERSHOT_2_SPEED = -0.40;
-    static final double SHOOTER_RING_POWERSHOT_3_SPEED = -0.47;
-
-    static final double SHOOTER_RING_TOPLEVEL_1_SPEED = -0.38;
-    static final double SHOOTER_RING_TOPLEVEL_2_SPEED = -0.42;
-    static final double SHOOTER_RING_TOPLEVEL_3_SPEED = -0.49;
-    static final double SHOOTER_AUTO_FIRING = -0.45;
 
     static final boolean SHOOTER_ON = true;
     static final boolean SHOOTER_OFF = false;
@@ -55,10 +44,10 @@ public class Shooter {
         runtime = elapsedTime;
         _powerFactor = powerFactor;
         shooterPIDCoefficient = new PIDFCoefficients();
-        shooterPIDCoefficient.p = 100;//2500;
-        shooterPIDCoefficient.i = 0.1;//0.1f;
-        shooterPIDCoefficient.d = 0.001;//10;
-        shooterPIDCoefficient.f = 17;//900;
+        shooterPIDCoefficient.p = 100; //100;//2500;
+        shooterPIDCoefficient.i = 0; //0.1;//0.1f;
+        shooterPIDCoefficient.d = 0; //0.001;//10;
+        shooterPIDCoefficient.f = 17; //17;//900;
     }
 
     public void Initialize(){
@@ -73,19 +62,25 @@ public class Shooter {
         shooterPower = -0.4; // SHOOTER_RING_POWERSHOT_1_SPEED;
         shooterState = SHOOTER_OFF;
 
-        double F = 0f;//32767 / SHOOTER_MAX_RPM ;
-        double P = 0f;//F * 0.1;
-        double I = 0f;//P * 0.1;
-        double D = 0f;
-        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, shooterPIDCoefficient);
         shooter.setVelocityPIDFCoefficients(shooterPIDCoefficient.p, shooterPIDCoefficient.i, shooterPIDCoefficient.d, shooterPIDCoefficient.f);
     }
 
-    public void StartOrStop()
+    public boolean IsShooterOn() { return (shooterState == SHOOTER_ON); }
+
+    public boolean IsShooterOff() { return (shooterState == SHOOTER_OFF); }
+
+    public void StartOrStop(boolean towerTop)
     {
         if(shooterState == SHOOTER_OFF)
         {
-            Start();
+            if(towerTop)
+            {
+                StartShootingTowerTop();
+            }
+            else
+            {
+                StartShootingPowerShot();
+            }
         }
         else
         {
@@ -105,9 +100,11 @@ public class Shooter {
     {
         if(shooterState == SHOOTER_ON)
         {
-            FireRingV1(SHOOTER_TOPLEVEL_RPM, false);
-            FireRingV1(SHOOTER_TOPLEVEL_RPM, false);
-            FireRingV1(SHOOTER_TOPLEVEL_RPM, false);
+            FireRingV1(SHOOTER_TOWERTOP_RPM, false);
+            wait(500);
+            FireRingV1(SHOOTER_TOWERTOP_RPM, true);
+            wait(500);
+            FireRingV1(SHOOTER_TOWERTOP_RPM, false);
         }
     }
 
@@ -127,7 +124,7 @@ public class Shooter {
         sleep(620);
     }
 
-    public void FireRingV1(double targetVelocity, boolean isSingleFire)
+    public void FireRingV1(double targetVelocity, boolean is1stTime)
     {
         double currentVelocity = shooter.getVelocity();
         double error = currentVelocity - targetVelocity;
@@ -175,13 +172,13 @@ public class Shooter {
         feeder.setPosition(FEEDER_UP);
         telemetry.addData("----- Shooting Velocity -----", "%.2f", shooter.getVelocity());
         telemetry.update();
-        if(isSingleFire)
+        if(is1stTime)
         {
-            sleep(200);
+            sleep(120);
         }
         else
         {
-            sleep(200);
+            sleep(70);
         }
         feeder.setPosition(FEEDER_DOWN);
         sleep(175);
@@ -227,6 +224,8 @@ public class Shooter {
 
     public void wait(int interval){ sleep(interval); }
     public void Start(){  SetVelocity(SHOOTER_RPM);  shooterState = SHOOTER_ON; }
+    public void StartShootingPowerShot(){ SetVelocity(SHOOTER_POWERSHOT_RPM);  shooterState = SHOOTER_ON; }
+    public void StartShootingTowerTop(){ SetVelocity(SHOOTER_TOWERTOP_RPM);  shooterState = SHOOTER_ON; }
     public void Start(double setPower){  shooter.setPower(setPower);  shooterState = SHOOTER_ON; }
     public void Stop(){ SetVelocity(SHOOTER_STOP); shooterState = SHOOTER_OFF; }
     public double GetVelocity() { return shooter.getVelocity();}
